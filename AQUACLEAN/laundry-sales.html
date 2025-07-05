@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Laundry Sales Management | AquaClean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-200 via-cyan-100 to-blue-400 min-h-screen font-sans relative overflow-x-hidden">
+  <!-- Back Arrow -->
+  <a href="admin-panel.html" class="fixed top-6 left-6 flex items-center gap-3 z-50 px-5 py-3 rounded-2xl bg-white/30 dark:bg-gray-900/40 shadow-lg border border-cyan-200/40 dark:border-cyan-800/40 backdrop-blur-xl text-blue-900 dark:text-cyan-200 font-bold text-xl hover:bg-cyan-100/60 hover:dark:bg-cyan-900/60 hover:text-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition-all duration-300 group" aria-label="Back to Admin Panel">
+    <i class="fas fa-arrow-left text-3xl group-hover:-translate-x-1 transition-transform duration-300"></i>
+    <span class="hidden sm:inline">Back to Admin Panel</span>
+  </a>
+  <!-- Header -->
+  <header class="text-center py-10">
+    <h1 class="text-4xl font-bold text-blue-700 mb-2 drop-shadow">Laundry Sales Management</h1>
+    <p class="text-lg text-blue-500 mb-6">Track and manage all laundry shop sales</p>
+  </header>
+  <!-- Dashboard -->
+  <section class="max-w-4xl mx-auto mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white/80 backdrop-blur-xl border border-blue-200 rounded-2xl p-6 shadow-xl text-center">
+        <div class="text-2xl font-bold text-blue-700 mb-2" id="totalSales">₱0.00</div>
+        <div class="text-blue-500">Total Sales</div>
+      </div>
+      <div class="bg-white/80 backdrop-blur-xl border border-cyan-200 rounded-2xl p-6 shadow-xl text-center">
+        <div class="text-2xl font-bold text-cyan-700 mb-2" id="totalTransactions">0</div>
+        <div class="text-cyan-500">Total Transactions</div>
+      </div>
+      <div class="bg-white/80 backdrop-blur-xl border border-green-200 rounded-2xl p-6 shadow-xl text-center">
+        <div class="text-2xl font-bold text-green-700 mb-2" id="latestSale">₱0.00</div>
+        <div class="text-green-500">Latest Sale</div>
+      </div>
+    </div>
+  </section>
+  <!-- Add Sale Form -->
+  <section class="max-w-2xl mx-auto mb-10 bg-white/90 backdrop-blur-xl border border-blue-100 rounded-2xl shadow-xl p-8">
+    <h2 class="text-2xl font-bold text-blue-700 mb-4">Add New Sale</h2>
+    <form id="saleForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-blue-700 font-semibold mb-1">Date</label>
+        <input type="date" id="saleDate" class="w-full px-4 py-2 rounded-xl border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition" required>
+      </div>
+      <div>
+        <label class="block text-blue-700 font-semibold mb-1">Customer</label>
+        <input type="text" id="saleCustomer" placeholder="Customer Name" class="w-full px-4 py-2 rounded-xl border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition" required>
+      </div>
+      <div>
+        <label class="block text-blue-700 font-semibold mb-1">Service</label>
+        <select id="saleService" class="w-full px-4 py-2 rounded-xl border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition" required>
+          <option value="">Select Service</option>
+          <option>Wash</option>
+          <option>Dry</option>
+          <option>Full Service</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-blue-700 font-semibold mb-1">Amount (₱)</label>
+        <input type="number" id="saleAmount" min="0" step="0.01" placeholder="0.00" class="w-full px-4 py-2 rounded-xl border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition" required>
+      </div>
+      <div>
+        <label class="block text-blue-700 font-semibold mb-1">Notes</label>
+        <input type="text" id="saleNotes" placeholder="Optional notes" class="w-full px-4 py-2 rounded-xl border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition">
+      </div>
+      <div>
+        <label class="block text-cyan-700 font-semibold mb-1">Payment Status</label>
+        <select id="salePaymentStatus" class="w-full px-4 py-2 rounded-xl border border-cyan-200 focus:border-cyan-500 focus:bg-cyan-50 transition" required>
+          <option value="Paid">Paid</option>
+          <option value="Unpaid">Unpaid</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-cyan-700 font-semibold mb-1">Payment Method</label>
+        <select id="salePaymentMethod" class="w-full px-4 py-2 rounded-xl border border-cyan-200 focus:border-cyan-500 focus:bg-cyan-50 transition" required>
+          <option value="Cash Payment">Cash Payment</option>
+          <option value="Online Payment">Online Payment</option>
+        </select>
+      </div>
+      <div class="md:col-span-3">
+        <label class="block text-blue-700 font-semibold mb-1">Products/Items Used</label>
+        <div id="itemsUsed"></div>
+        <button type="button" id="addItemBtn" class="mt-2 bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded shadow font-semibold transition">+ Add Item Used</button>
+      </div>
+      <div class="md:col-span-3 flex justify-end mt-2">
+        <button type="submit" class="bg-gradient-to-r from-blue-700 to-cyan-400 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:from-blue-800 hover:to-cyan-500 transition">Add Sale</button>
+      </div>
+    </form>
+  </section>
+  <!-- Sales Table -->
+  <section class="max-w-4xl mx-auto mb-16">
+    <div class="flex justify-end mb-4 no-print">
+      <button onclick="window.print()" class="bg-gradient-to-r from-blue-700 to-cyan-400 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:from-blue-800 hover:to-cyan-500 transition flex items-center gap-2">
+        <i class="fas fa-print text-xl"></i> Print Sales
+      </button>
+    </div>
+    <div class="bg-white/95 rounded-2xl shadow-xl p-8 border border-blue-100">
+      <h2 class="text-2xl font-bold text-blue-700 mb-4">Sales Records</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-blue-100 text-blue-700">
+              <th class="py-2 px-4 rounded-tl-2xl">Date</th>
+              <th class="py-2 px-4">Customer</th>
+              <th class="py-2 px-4">Service</th>
+              <th class="py-2 px-4">Amount (₱)</th>
+              <th class="py-2 px-4">Notes</th>
+              <th class="py-2 px-4">Payment Status</th>
+              <th class="py-2 px-4">Payment Method</th>
+              <th class="py-2 px-4">Used Items</th>
+              <th class="py-2 px-4 rounded-tr-2xl no-print">Action</th>
+            </tr>
+          </thead>
+          <tbody id="salesTableBody">
+            <!-- Sales rows go here -->
+          </tbody>
+        </table>
+      </div>
+      <div id="emptyState" class="text-center text-gray-400 py-8 hidden">No sales records yet.</div>
+    </div>
+  </section>
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-xl p-8 max-w-sm w-full text-center relative">
+      <button onclick="closeConfirmModal()" class="absolute top-2 right-3 text-2xl text-gray-500 hover:text-blue-600">&times;</button>
+      <h3 class="text-2xl font-bold mb-4 text-blue-700">Confirm Sale Details</h3>
+      <div class="mb-4 text-left text-gray-700">
+        <div><span class="font-semibold">Date:</span> <span id="confirmDate"></span></div>
+        <div><span class="font-semibold">Customer:</span> <span id="confirmCustomer"></span></div>
+        <div><span class="font-semibold">Service:</span> <span id="confirmService"></span></div>
+        <div><span class="font-semibold">Amount:</span> ₱<span id="confirmAmount"></span></div>
+        <div><span class="font-semibold">Notes:</span> <span id="confirmNotes"></span></div>
+        <div><span class="font-semibold">Payment Status:</span> <span id="confirmPaymentStatus"></span></div>
+        <div><span class="font-semibold">Payment Method:</span> <span id="confirmPaymentMethod"></span></div>
+        <div><span class="font-semibold">Used Items:</span> <ul id="confirmUsedItems" class="list-disc ml-6"></ul></div>
+      </div>
+      <div class="flex justify-center gap-4 mt-6">
+        <button onclick="saveConfirmedSale()" class="bg-gradient-to-r from-blue-700 to-cyan-400 text-white px-6 py-2 rounded-full font-bold shadow hover:from-blue-800 hover:to-cyan-500 transition">Confirm</button>
+        <button onclick="closeConfirmModal()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-full font-bold shadow hover:bg-gray-400 transition">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="relative z-10 bg-blue-700 text-white text-center py-4 mt-12 rounded-t-3xl shadow-lg no-print">
+    &copy; <span id="year"></span> AquaClean Laundry & Water Refilling Station. All rights reserved.
+  </footer>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; }
+      table { background: #fff !important; }
+      th, td { color: #222 !important; }
+      footer { display: none !important; }
+    }
+  </style>
+  <script>
+    // Utility functions for localStorage
+    function getCurrentAdminKey(suffix) {
+      const user = (localStorage.getItem('adminUser') || '').trim().toLowerCase();
+      if (user === 'admin') {
+        return `mainAdmin_${suffix}`;
+      } else if (user) {
+        return `admin_${user}_${suffix}`;
+      } else {
+        return suffix; // fallback
+      }
+    }
+    function getSales() {
+      return JSON.parse(localStorage.getItem(getCurrentAdminKey('laundrySales')) || '[]');
+    }
+    function setSales(sales) {
+      localStorage.setItem(getCurrentAdminKey('laundrySales'), JSON.stringify(sales));
+    }
+    function getLaundryInventory() {
+      return JSON.parse(localStorage.getItem(getCurrentAdminKey('laundryInventory')) || '[]');
+    }
+    function setLaundryInventory(inventory) {
+      localStorage.setItem(getCurrentAdminKey('laundryInventory'), JSON.stringify(inventory));
+    }
+    // Render dashboard stats
+    function updateStats() {
+      const sales = getSales();
+      const total = sales.reduce((sum, s) => sum + parseFloat(s.amount), 0);
+      document.getElementById('totalSales').textContent = `₱${total.toFixed(2)}`;
+      document.getElementById('totalTransactions').textContent = sales.length;
+      document.getElementById('latestSale').textContent = sales.length ? `₱${parseFloat(sales[sales.length-1].amount).toFixed(2)}` : '₱0.00';
+    }
+    // Render sales table
+    function renderSales() {
+      const sales = getSales();
+      const tbody = document.getElementById('salesTableBody');
+      const emptyState = document.getElementById('emptyState');
+      tbody.innerHTML = '';
+      if (sales.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+      sales.forEach((sale, idx) => {
+        const tr = document.createElement('tr');
+        let actionButtons = '';
+        if (sale.paymentStatus === 'Unpaid') {
+          actionButtons += `<button onclick="markAsPaid(${idx})" class="bg-green-500 hover:bg-green-700 text-white rounded-full px-3 py-1 text-sm font-bold shadow transition mr-2" title="Mark as Paid"><i class="fas fa-check"></i> Mark as Paid</button>`;
+        }
+        actionButtons += `<button onclick="deleteSale(${idx})" class="bg-red-500 hover:bg-red-700 text-white rounded-full px-3 py-1 text-sm font-bold shadow transition" title="Delete"><i class="fas fa-trash"></i></button>`;
+        // Used items summary
+        const usedSummary = sale.usedItems && sale.usedItems.length ? sale.usedItems.map(i => `${i.qty}x ${i.name}`).join(', ') : '-';
+        tr.innerHTML = `
+          <td class="py-2 px-4">${sale.date}</td>
+          <td class="py-2 px-4">${sale.customer}</td>
+          <td class="py-2 px-4">${sale.service || ''}</td>
+          <td class="py-2 px-4">₱${parseFloat(sale.amount).toFixed(2)}</td>
+          <td class="py-2 px-4">${sale.notes || ''}</td>
+          <td class="py-2 px-4">${sale.paymentStatus || 'Paid'}</td>
+          <td class="py-2 px-4">${sale.paymentMethod || 'Cash Payment'}</td>
+          <td class="py-2 px-4">${usedSummary}</td>
+          <td class="py-2 px-4 no-print text-right">${actionButtons}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    // Delete sale
+    function deleteSale(idx) {
+      if (!confirm('Are you sure you want to delete this sale?')) return;
+      const sales = getSales();
+      sales.splice(idx, 1);
+      setSales(sales);
+      renderSales();
+      updateStats();
+    }
+    function markAsPaid(idx) {
+      const sales = getSales();
+      sales[idx].paymentStatus = 'Paid';
+      setSales(sales);
+      renderSales();
+      updateStats();
+    }
+    let pendingSale = null;
+    document.getElementById('saleForm').onsubmit = function(e) {
+      e.preventDefault();
+      const date = document.getElementById('saleDate').value;
+      const customer = document.getElementById('saleCustomer').value.trim();
+      const service = document.getElementById('saleService').value;
+      const amount = parseFloat(document.getElementById('saleAmount').value);
+      const notes = document.getElementById('saleNotes').value.trim();
+      const paymentStatus = document.getElementById('salePaymentStatus').value;
+      const paymentMethod = document.getElementById('salePaymentMethod').value;
+      // Gather used items
+      const rows = document.querySelectorAll('.item-row');
+      let inventory = getLaundryInventory();
+      let valid = true;
+      const usedItems = [];
+      rows.forEach(row => {
+        const itemId = row.querySelector('.item-select').value;
+        const qty = parseInt(row.querySelector('.item-qty').value);
+        const item = inventory.find(i => i.id == itemId);
+        if (!item || item.quantity < qty) valid = false;
+        usedItems.push({ id: itemId, name: item.name, qty });
+      });
+      if (!valid) {
+        alert('Not enough inventory for one or more items!');
+        return;
+      }
+      if (!date || !customer || !service || isNaN(amount) || amount < 0) return;
+      // Store pending sale and show modal
+      pendingSale = { date, customer, service, amount, notes, paymentStatus, paymentMethod, usedItems };
+      document.getElementById('confirmDate').textContent = date;
+      document.getElementById('confirmCustomer').textContent = customer;
+      document.getElementById('confirmService').textContent = service;
+      document.getElementById('confirmAmount').textContent = amount.toFixed(2);
+      document.getElementById('confirmNotes').textContent = notes || '-';
+      document.getElementById('confirmPaymentStatus').textContent = paymentStatus;
+      document.getElementById('confirmPaymentMethod').textContent = paymentMethod;
+      // Show used items in confirmation modal
+      const usedItemsList = document.getElementById('confirmUsedItems');
+      if (usedItemsList) {
+        usedItemsList.innerHTML = usedItems.length ? usedItems.map(i => `<li>${i.qty}x ${i.name}</li>`).join('') : '<li>None</li>';
+      }
+      document.getElementById('confirmModal').classList.remove('hidden');
+    };
+    function closeConfirmModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+      pendingSale = null;
+    }
+    function saveConfirmedSale() {
+      if (!pendingSale) return;
+      const sales = getSales();
+      // Assign a unique saleId (timestamp)
+      const saleId = Date.now();
+      pendingSale.saleId = saleId;
+      sales.push(pendingSale);
+      setSales(sales);
+      // Log used items to laundryUsageLog
+      if (pendingSale.usedItems && pendingSale.usedItems.length) {
+        let usageLog = JSON.parse(localStorage.getItem(getCurrentAdminKey('laundryUsageLog')) || '[]');
+        console.log('[DEBUG] Saving sale:', pendingSale);
+        pendingSale.usedItems.forEach(item => {
+          const logEntry = {
+            date: pendingSale.date,
+            timestamp: new Date().toISOString(),
+            itemId: item.id,
+            itemName: item.name,
+            quantity: item.qty,
+            customer: pendingSale.customer,
+            saleId: saleId
+          };
+          usageLog.push(logEntry);
+          console.log('[DEBUG] Adding to usage log:', logEntry);
+        });
+        localStorage.setItem(getCurrentAdminKey('laundryUsageLog'), JSON.stringify(usageLog));
+        console.log('[DEBUG] Final usage log after save:', usageLog);
+      } else {
+        console.log('[DEBUG] No used items to log for this sale.');
+      }
+      renderSales();
+      updateStats();
+      document.getElementById('saleForm').reset();
+      closeConfirmModal();
+    }
+    function createItemSelect(selectedId) {
+      const inventory = getLaundryInventory();
+      const select = document.createElement('select');
+      select.className = 'item-select border rounded px-2 py-1';
+      inventory.filter(item => item.quantity > 0).forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = `${item.name} (Stock: ${item.quantity})`;
+        if (selectedId && item.id === selectedId) option.selected = true;
+        select.appendChild(option);
+      });
+      return select;
+    }
+    function addItemRow(selectedId) {
+      const row = document.createElement('div');
+      row.className = 'item-row flex gap-2 mb-2 items-center';
+      const select = createItemSelect(selectedId);
+      const qtyInput = document.createElement('input');
+      qtyInput.type = 'number';
+      qtyInput.className = 'item-qty border rounded px-2 py-1';
+      qtyInput.min = '1';
+      // Set max to selected item's stock
+      function updateQtyMax() {
+        const inventory = getLaundryInventory();
+        const item = inventory.find(i => i.id == select.value);
+        qtyInput.max = item ? item.quantity : 1;
+        if (parseInt(qtyInput.value) > parseInt(qtyInput.max)) qtyInput.value = qtyInput.max;
+      }
+      select.onchange = updateQtyMax;
+      updateQtyMax();
+      qtyInput.value = '1';
+      qtyInput.style.width = '70px';
+      // Stock display
+      const stockSpan = document.createElement('span');
+      stockSpan.className = 'ml-2 text-blue-700 font-semibold';
+      function updateStockSpan() {
+        const inventory = getLaundryInventory();
+        const item = inventory.find(i => i.id == select.value);
+        stockSpan.textContent = item ? `Stock: ${item.quantity}` : 'Stock: 0';
+      }
+      select.onchange = function() { updateStockSpan(); updateQtyMax(); };
+      updateStockSpan();
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'bg-red-400 hover:bg-red-600 text-white px-2 rounded';
+      removeBtn.textContent = 'Remove';
+      removeBtn.onclick = function() { row.remove(); };
+      row.appendChild(select);
+      row.appendChild(qtyInput);
+      row.appendChild(stockSpan);
+      row.appendChild(removeBtn);
+      document.getElementById('itemsUsed').appendChild(row);
+    }
+    function refreshAllItemSelects() {
+      const rows = document.querySelectorAll('.item-row');
+      rows.forEach(row => {
+        const oldSelect = row.querySelector('.item-select');
+        const selectedId = oldSelect ? oldSelect.value : undefined;
+        const newSelect = createItemSelect(selectedId);
+        // Update stock span and qty max after replacing select
+        const stockSpan = row.querySelector('span');
+        const qtyInput = row.querySelector('.item-qty');
+        function updateStockSpan() {
+          const inventory = getLaundryInventory();
+          const item = inventory.find(i => i.id == newSelect.value);
+          stockSpan.textContent = item ? `Stock: ${item.quantity}` : 'Stock: 0';
+        }
+        function updateQtyMax() {
+          const inventory = getLaundryInventory();
+          const item = inventory.find(i => i.id == newSelect.value);
+          qtyInput.max = item ? item.quantity : 1;
+          if (parseInt(qtyInput.value) > parseInt(qtyInput.max)) qtyInput.value = qtyInput.max;
+        }
+        newSelect.onchange = function() { updateStockSpan(); updateQtyMax(); };
+        updateStockSpan();
+        updateQtyMax();
+        row.replaceChild(newSelect, oldSelect);
+      });
+    }
+    document.getElementById('addItemBtn').onclick = function() { addItemRow(); };
+    // On form submit, gather used items and update inventory
+    // Remove usedItems gathering from submit event listener (it is now in onsubmit)
+    // --- MIGRATION: Convert old inventory format to new format on page load ---
+    function migrateLaundryInventory() {
+      let inventory = getLaundryInventory();
+      let changed = false;
+      inventory.forEach(item => {
+        if (item.qty !== undefined) {
+          item.quantity = item.qty;
+          delete item.qty;
+          changed = true;
+        }
+        if (!item.id) {
+          item.id = Date.now().toString() + Math.random().toString(36).slice(2);
+          changed = true;
+        }
+      });
+      if (changed) setLaundryInventory(inventory);
+    }
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      migrateLaundryInventory();
+      addItemRow();
+      refreshAllItemSelects();
+      renderSales();
+      updateStats();
+      // Auto-update Footer Year
+      const yearSpan = document.getElementById('year');
+      if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Accounts | AquaClean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-200 via-cyan-100 to-blue-400 min-h-screen font-sans relative overflow-x-hidden">
+  <!-- Back Arrow -->
+  <a href="system-settings.html" class="fixed top-6 left-6 flex items-center gap-3 z-50 px-5 py-3 rounded-2xl bg-white/30 dark:bg-gray-900/40 shadow-lg border border-cyan-200/40 dark:border-cyan-800/40 backdrop-blur-xl text-blue-900 dark:text-cyan-200 font-bold text-xl hover:bg-cyan-100/60 hover:dark:bg-cyan-900/60 hover:text-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition-all duration-300 group" aria-label="Back to System Settings">
+    <i class="fas fa-arrow-left text-3xl group-hover:-translate-x-1 transition-transform duration-300"></i>
+    <span class="hidden sm:inline">Back to System Settings</span>
+  </a>
+  <!-- Header -->
+  <header class="text-center py-10">
+    <h1 class="text-4xl font-bold text-blue-700 mb-2 drop-shadow">Admin Accounts</h1>
+    <p class="text-lg text-blue-500 mb-6">Manage admin users for the system</p>
+  </header>
+  <!-- Admin Accounts Section -->
+  <section class="max-w-2xl mx-auto mb-12">
+    <div class="bg-white/90 border-2 border-blue-400/40 rounded-2xl shadow-xl p-8 flex flex-col items-center justify-center ring-2 ring-blue-400/30">
+      <i class="fas fa-user-shield text-3xl text-blue-600 mb-4"></i>
+      <h3 class="text-xl font-bold text-blue-700 mb-2">Admin Accounts</h3>
+      <p class="text-blue-500 mb-4 text-center">Add, view, or delete admin users</p>
+      <form id="addAdminForm" class="flex flex-col gap-3 mb-4 w-full max-w-sm mx-auto">
+        <input type="text" id="newAdminUser" placeholder="Username" class="px-4 py-2 rounded border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition" required>
+        <input type="password" id="newAdminPass" placeholder="Password" class="px-4 py-2 rounded border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition" required>
+        <button type="submit" class="bg-gradient-to-r from-blue-700 to-cyan-400 text-white px-6 py-2 rounded-full font-bold shadow hover:from-blue-800 hover:to-cyan-500 transition">Create Admin Account</button>
+      </form>
+      <div id="adminCreateNotice" class="hidden text-center text-blue-500 mb-4 w-full max-w-sm mx-auto"></div>
+      <div id="adminAccountsList" class="text-left w-full max-w-sm mx-auto">
+        <!-- Main admin and other admin accounts will be listed here -->
+      </div>
+    </div>
+    <!-- Confirmation Modal -->
+    <div id="confirmDeleteModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-xl shadow-xl p-8 max-w-sm w-full text-center relative">
+        <button onclick="closeConfirmDelete()" class="absolute top-2 right-3 text-2xl text-gray-500 hover:text-blue-600">&times;</button>
+        <h3 class="text-2xl font-bold mb-4 text-blue-700">Confirm Delete</h3>
+        <div class="mb-4 text-gray-700">Are you sure you want to delete admin account <span id="deleteUser" class="font-bold"></span>?</div>
+        <div class="flex justify-center gap-4 mt-6">
+          <button onclick="confirmDeleteAdmin()" class="bg-red-500 hover:bg-red-700 text-white px-6 py-2 rounded-full font-bold shadow transition">Delete</button>
+          <button onclick="closeConfirmDelete()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-full font-bold shadow hover:bg-gray-400 transition">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Reusable Modal System -->
+  <div id="customModalBackdrop" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div id="customModal" class="bg-white rounded-xl shadow-xl p-8 max-w-xs w-full text-center relative">
+      <div id="customModalIcon" class="mb-4"></div>
+      <h3 id="customModalTitle" class="text-2xl font-bold mb-2"></h3>
+      <div id="customModalMessage" class="mb-4 text-gray-700"></div>
+      <input id="customModalInput" class="hidden px-4 py-2 rounded border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition mb-4 w-full" />
+      <div class="flex justify-center gap-4 mt-4">
+        <button id="customModalCancel" class="hidden bg-gray-300 text-gray-700 px-6 py-2 rounded-full font-bold shadow hover:bg-gray-400 transition"></button>
+        <button id="customModalOk" class="bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow transition"></button>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="relative z-10 bg-blue-700 text-white text-center py-4 mt-12 rounded-t-3xl shadow-lg">
+    &copy; <span id="year"></span> AquaClean Laundry & Water Refilling Station. All rights reserved.
+  </footer>
+  <script>
+    // Restrict access to main admin only
+    window.addEventListener('DOMContentLoaded', function() {
+      const currentUser = (localStorage.getItem('adminUser') || '').trim().toLowerCase();
+      if (currentUser !== 'admin') {
+        window.location.href = 'admin-panel-user.html';
+        return;
+      }
+      const yearSpan = document.getElementById('year');
+      if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+      renderAdminAccounts();
+
+      // Hide create admin form if not main admin
+      const addAdminForm = document.getElementById('addAdminForm');
+      const adminCreateNotice = document.getElementById('adminCreateNotice');
+      if (currentUser !== 'admin') {
+        if (addAdminForm) addAdminForm.style.display = 'none';
+        if (adminCreateNotice) {
+          adminCreateNotice.textContent = 'Only the main admin can create new admin users.';
+          adminCreateNotice.classList.remove('hidden');
+        }
+      }
+    });
+    function getAdminAccounts() {
+      return JSON.parse(localStorage.getItem('adminAccounts') || '[{"user":"admin","pass":"password"}]');
+    }
+    function setAdminAccounts(list) {
+      localStorage.setItem('adminAccounts', JSON.stringify(list));
+    }
+    function renderAdminAccounts() {
+      const list = getAdminAccounts();
+      const container = document.getElementById('adminAccountsList');
+      if (!list.length) {
+        container.innerHTML = '<div class="text-gray-500">No admin accounts found.</div>';
+        return;
+      }
+      // Separate main admin and other admins
+      const mainAdmin = list.find(acc => acc.user && acc.user.trim().toLowerCase() === 'admin');
+      const otherAdmins = list.filter(acc => !(acc.user && acc.user.trim().toLowerCase() === 'admin'));
+      let html = '';
+      if (mainAdmin) {
+        html += `
+          <div class="mb-6 p-4 bg-blue-100 border-2 border-blue-400 rounded-xl flex items-center justify-between">
+            <span class="font-semibold text-blue-900 text-lg flex items-center gap-2"><i class='fas fa-crown text-yellow-500'></i> Main Admin: ${mainAdmin.user}</span>
+            <span class="text-xs text-blue-500 font-bold">Cannot be deleted</span>
+          </div>
+        `;
+      }
+      if (otherAdmins.length) {
+        html += '<div class="mb-2 text-blue-700 font-semibold">Other Admin Accounts</div>';
+        html += otherAdmins.map((acc, idx) => {
+          // Find the index in the original list for delete
+          const origIdx = list.findIndex(a => a.user === acc.user && a.pass === acc.pass);
+          return `
+            <div class="flex items-center justify-between py-2 border-b">
+              <span class="font-semibold text-blue-700">${acc.user}</span>
+              <button onclick="showConfirmDelete(${origIdx})" class="bg-red-500 hover:bg-red-700 text-white rounded px-3 py-1 text-xs font-bold ml-4">Delete</button>
+            </div>
+          `;
+        }).join('');
+      } else {
+        html += '<div class="text-gray-400 italic">No other admin accounts.</div>';
+      }
+      container.innerHTML = html;
+    }
+    document.getElementById('addAdminForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const user = document.getElementById('newAdminUser').value.trim();
+      const pass = document.getElementById('newAdminPass').value;
+      if (!user || !pass) return;
+      const list = getAdminAccounts();
+      if (list.some(acc => acc.user.toLowerCase() === user.toLowerCase())) {
+        await showCustomAlert('Admin username already exists!', 'Error', 'error');
+        return;
+      }
+      list.push({ user, pass });
+      setAdminAccounts(list);
+      renderAdminAccounts();
+      this.reset();
+    };
+    // Delete confirmation modal logic
+    let deleteIdx = null;
+    async function showConfirmDelete(idx) {
+      deleteIdx = idx;
+      const list = getAdminAccounts();
+      document.getElementById('deleteUser').textContent = list[idx].user;
+      document.getElementById('confirmDeleteModal').classList.remove('hidden');
+    }
+    async function closeConfirmDelete() {
+      document.getElementById('confirmDeleteModal').classList.add('hidden');
+      deleteIdx = null;
+    }
+    async function confirmDeleteAdmin() {
+      if (deleteIdx === null) return;
+      const list = getAdminAccounts();
+      const acc = list[deleteIdx];
+      // Prevent deletion of main admin (username 'admin', case-insensitive, trimmed)
+      if (acc.user && acc.user.trim().toLowerCase() === 'admin') {
+        await showCustomAlert('The main admin account cannot be deleted.', 'Error', 'error');
+        closeConfirmDelete();
+        return;
+      }
+      list.splice(deleteIdx, 1);
+      setAdminAccounts(list);
+      renderAdminAccounts();
+      closeConfirmDelete();
+    }
+
+    // Custom Modal System
+    async function showCustomAlert(message, title = 'Notice', icon = 'info', okText = 'OK') {
+      return new Promise(resolve => {
+        const backdrop = document.getElementById('customModalBackdrop');
+        const modal = document.getElementById('customModal');
+        document.getElementById('customModalTitle').textContent = title;
+        document.getElementById('customModalMessage').textContent = message;
+        document.getElementById('customModalInput').classList.add('hidden');
+        document.getElementById('customModalInput').value = '';
+        document.getElementById('customModalCancel').classList.add('hidden');
+        const okBtn = document.getElementById('customModalOk');
+        okBtn.textContent = okText;
+        okBtn.className = 'bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow transition';
+        // Icon
+        const iconDiv = document.getElementById('customModalIcon');
+        iconDiv.innerHTML = icon === 'success' ? "<i class='fas fa-check-circle text-green-500 text-4xl'></i>" : icon === 'error' ? "<i class='fas fa-times-circle text-red-500 text-4xl'></i>" : icon === 'warning' ? "<i class='fas fa-exclamation-triangle text-yellow-500 text-4xl'></i>" : "<i class='fas fa-info-circle text-blue-500 text-4xl'></i>";
+        backdrop.classList.remove('hidden');
+        okBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          resolve();
+        };
+      });
+    }
+    async function showCustomConfirm(message, title = 'Are you sure?', icon = 'warning', okText = 'Yes', cancelText = 'Cancel') {
+      return new Promise(resolve => {
+        const backdrop = document.getElementById('customModalBackdrop');
+        const modal = document.getElementById('customModal');
+        document.getElementById('customModalTitle').textContent = title;
+        document.getElementById('customModalMessage').textContent = message;
+        document.getElementById('customModalInput').classList.add('hidden');
+        document.getElementById('customModalInput').value = '';
+        const okBtn = document.getElementById('customModalOk');
+        okBtn.textContent = okText;
+        okBtn.className = 'bg-red-500 hover:bg-red-700 text-white px-6 py-2 rounded-full font-bold shadow transition';
+        const cancelBtn = document.getElementById('customModalCancel');
+        cancelBtn.textContent = cancelText;
+        cancelBtn.classList.remove('hidden');
+        // Icon
+        const iconDiv = document.getElementById('customModalIcon');
+        iconDiv.innerHTML = icon === 'error' ? "<i class='fas fa-times-circle text-red-500 text-4xl'></i>" : icon === 'success' ? "<i class='fas fa-check-circle text-green-500 text-4xl'></i>" : icon === 'warning' ? "<i class='fas fa-exclamation-triangle text-yellow-500 text-4xl'></i>" : "<i class='fas fa-question-circle text-blue-500 text-4xl'></i>";
+        backdrop.classList.remove('hidden');
+        okBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          cancelBtn.classList.add('hidden');
+          resolve(true);
+        };
+        cancelBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          cancelBtn.classList.add('hidden');
+          resolve(false);
+        };
+      });
+    }
+    async function showCustomPrompt(message, title = 'Input Required', icon = 'info', okText = 'OK', cancelText = 'Cancel', defaultValue = '') {
+      return new Promise(resolve => {
+        const backdrop = document.getElementById('customModalBackdrop');
+        const modal = document.getElementById('customModal');
+        document.getElementById('customModalTitle').textContent = title;
+        document.getElementById('customModalMessage').textContent = message;
+        const input = document.getElementById('customModalInput');
+        input.classList.remove('hidden');
+        input.value = defaultValue;
+        const okBtn = document.getElementById('customModalOk');
+        okBtn.textContent = okText;
+        okBtn.className = 'bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow transition';
+        const cancelBtn = document.getElementById('customModalCancel');
+        cancelBtn.textContent = cancelText;
+        cancelBtn.classList.remove('hidden');
+        // Icon
+        const iconDiv = document.getElementById('customModalIcon');
+        iconDiv.innerHTML = icon === 'error' ? "<i class='fas fa-times-circle text-red-500 text-4xl'></i>" : icon === 'success' ? "<i class='fas fa-check-circle text-green-500 text-4xl'></i>" : icon === 'warning' ? "<i class='fas fa-exclamation-triangle text-yellow-500 text-4xl'></i>" : "<i class='fas fa-info-circle text-blue-500 text-4xl'></i>";
+        backdrop.classList.remove('hidden');
+        okBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          cancelBtn.classList.add('hidden');
+          resolve(input.value);
+        };
+        cancelBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          cancelBtn.classList.add('hidden');
+          resolve(null);
+        };
+      });
+    }
+  </script>
+</body>
+</html> 

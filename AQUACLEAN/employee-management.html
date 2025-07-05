@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Management | AquaClean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'slide-in': 'slideIn 0.3s ease-out',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-cyan-800 to-blue-700 dark:from-gray-900 dark:via-gray-800 dark:to-black min-h-screen">
+  <!-- Decorative Background Elements -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl animate-pulse" style="animation-delay: -2s;"></div>
+  </div>
+
+  <!-- Notification Container -->
+  <div id="notificationContainer" class="fixed top-4 right-4 z-50"></div>
+
+  <!-- Back Arrow -->
+  <a href="admin-panel.html" class="fixed top-6 left-6 flex items-center gap-3 z-50 px-5 py-3 rounded-2xl bg-white/30 dark:bg-gray-900/40 shadow-lg border border-cyan-200/40 dark:border-cyan-800/40 backdrop-blur-xl text-blue-900 dark:text-cyan-200 font-bold text-xl hover:bg-cyan-100/60 hover:dark:bg-cyan-900/60 hover:text-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition-all duration-300 group" aria-label="Back to Admin Panel">
+    <i class="fas fa-arrow-left text-3xl group-hover:-translate-x-1 transition-transform duration-300"></i>
+    <span class="hidden sm:inline">Back to Admin Panel</span>
+  </a>
+
+  <div class="min-h-screen flex flex-col items-center justify-center px-4">
+    <!-- Enhanced Stats Dashboard -->
+    <div class="w-full max-w-6xl mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-br from-green-100/80 to-emerald-100/80 dark:from-green-900/50 dark:to-emerald-900/50 backdrop-blur-xl border border-green-200/50 dark:border-green-700/50 rounded-2xl p-6 shadow-xl">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-green-600 dark:text-green-300 font-semibold text-sm uppercase tracking-wide">Total Employees</p>
+              <p class="text-2xl font-bold text-green-800 dark:text-green-200" id="totalEmployees">0</p>
+            </div>
+            <div class="bg-green-500/20 p-3 rounded-full">
+              <i class="fas fa-users text-2xl text-green-600 dark:text-green-400"></i>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-100/80 to-cyan-100/80 dark:from-blue-900/50 dark:to-cyan-900/50 backdrop-blur-xl border border-blue-200/50 dark:border-blue-700/50 rounded-2xl p-6 shadow-xl">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-blue-600 dark:text-blue-300 font-semibold text-sm uppercase tracking-wide">Active Today</p>
+              <p class="text-2xl font-bold text-blue-800 dark:text-blue-200" id="activeToday">0</p>
+            </div>
+            <div class="bg-blue-500/20 p-3 rounded-full">
+              <i class="fas fa-user-check text-2xl text-blue-600 dark:text-blue-400"></i>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-purple-100/80 to-pink-100/80 dark:from-purple-900/50 dark:to-pink-900/50 backdrop-blur-xl border border-purple-200/50 dark:border-purple-700/50 rounded-2xl p-6 shadow-xl">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-purple-600 dark:text-purple-300 font-semibold text-sm uppercase tracking-wide">This Month</p>
+              <p class="text-lg font-bold text-purple-800 dark:text-purple-200" id="currentMonth">-</p>
+            </div>
+            <div class="bg-purple-500/20 p-3 rounded-full">
+              <i class="fas fa-calendar text-2xl text-purple-600 dark:text-purple-400"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-blue-200/50 dark:border-gray-600/50 rounded-3xl shadow-2xl p-8 w-full max-w-2xl">
+      <div class="text-center mb-8">
+        <h2 class="text-4xl font-bold text-blue-700 dark:text-cyan-300 mb-4">
+          <i class="fas fa-users text-cyan-500 dark:text-cyan-400 mr-3"></i>Employee Management
+        </h2>
+        <p class="text-lg text-gray-600 dark:text-gray-300">Add and manage your employees</p>
+      </div>
+
+      <!-- Enhanced Add Employee Form -->
+      <div id="addEmployeeForm" class="bg-gradient-to-r from-blue-100/50 to-cyan-100/50 dark:from-gray-700/50 dark:to-gray-600/50 rounded-2xl p-6 border border-blue-200/50 dark:border-gray-600/50 shadow-lg backdrop-blur-sm mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-lg font-bold text-blue-700 dark:text-cyan-300 mb-3">
+              <i class="fas fa-user-plus text-cyan-500 dark:text-cyan-400 mr-2"></i>Employee Name
+            </label>
+            <input 
+              type="text" 
+              id="employeeName" 
+              class="w-full p-4 border-2 border-blue-200 dark:border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-4 focus:ring-cyan-200 dark:focus:ring-cyan-800 transition-all duration-300 bg-white/90 dark:bg-gray-800/90 text-lg font-medium shadow-md backdrop-blur-sm" 
+              placeholder="Enter employee name..." 
+              autocomplete="off"
+            >
+          </div>
+          <div>
+            <label class="block text-lg font-bold text-blue-700 dark:text-cyan-300 mb-3">
+              <i class="fas fa-calendar-plus text-cyan-500 dark:text-cyan-400 mr-2"></i>Start Date
+            </label>
+            <input 
+              type="date" 
+              id="employeeStartDate" 
+              class="w-full p-4 border-2 border-blue-200 dark:border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-4 focus:ring-cyan-200 dark:focus:ring-cyan-800 transition-all duration-300 bg-white/90 dark:bg-gray-800/90 text-lg font-medium shadow-md backdrop-blur-sm" 
+              value=""
+            >
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <button 
+            type="button" 
+            id="addEmployeeBtn"
+            class="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:from-cyan-600 hover:to-blue-700 transition transform hover:scale-105 ring-2 ring-cyan-300"
+          >
+            <i class="fas fa-plus text-xl mr-2"></i>Add Employee
+          </button>
+        </div>
+      </div>
+
+      <!-- Enhanced Employee List -->
+      <div class="bg-gradient-to-br from-blue-100/50 to-cyan-100/50 dark:from-gray-700/50 dark:to-gray-600/50 rounded-2xl p-6 border border-blue-200/50 dark:border-gray-600/50 shadow-lg backdrop-blur-sm">
+        <h3 class="text-2xl font-bold text-blue-700 dark:text-cyan-300 mb-4 text-center">
+          <i class="fas fa-list text-cyan-500 dark:text-cyan-400 mr-3"></i>Employee List
+        </h3>
+        <ul id="employeeList" class="space-y-3">
+          <!-- Employee items will appear here -->
+        </ul>
+        
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-8">
+          <div class="bg-gradient-to-br from-purple-100/50 to-pink-100/50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl p-6 border-2 border-dashed border-purple-300 dark:border-purple-600">
+            <i class="fas fa-users text-4xl text-purple-400 dark:text-purple-500 mb-4"></i>
+            <h3 class="text-xl font-bold text-purple-700 dark:text-purple-300 mb-2">No Employees Yet</h3>
+            <p class="text-purple-600 dark:text-purple-400">Start by adding your first employee above!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Enhanced Employee Management Functions
+    function getCurrentAdminKey(suffix) {
+      const user = (localStorage.getItem('adminUser') || '').trim().toLowerCase();
+      if (user === 'admin') {
+        return `mainAdmin_${suffix}`;
+      } else if (user) {
+        return `admin_${user}_${suffix}`;
+      } else {
+        return suffix; // fallback
+      }
+    }
+
+    function getEmployees() {
+      return JSON.parse(localStorage.getItem(getCurrentAdminKey('employees')) || '[]');
+    }
+
+    function setEmployees(list) {
+      localStorage.setItem(getCurrentAdminKey('employees'), JSON.stringify(list));
+    }
+
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notificationContainer');
+      const notification = document.createElement('div');
+      
+      const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+      const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+      
+      notification.className = `${bgColor} text-white px-6 py-4 rounded-xl shadow-lg mb-4 animate-fade-in flex items-center`;
+      notification.innerHTML = `
+        <i class="fas ${icon} mr-3 text-xl"></i>
+        <span class="font-semibold">${message}</span>
+        <button onclick="this.parentElement.remove()" class="ml-auto text-white hover:text-gray-200">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      container.appendChild(notification);
+      
+      // Auto-remove after 3 seconds
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.remove();
+        }
+      }, 3000);
+    }
+
+    function updateStats() {
+      const list = getEmployees();
+      const attendanceData = JSON.parse(localStorage.getItem(getCurrentAdminKey('attendanceData')) || '{}');
+      const today = new Date().toISOString().split('T')[0];
+      
+      document.getElementById('totalEmployees').textContent = list.length;
+      document.getElementById('currentMonth').textContent = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      
+      // Calculate active today
+      let activeToday = 0;
+      list.forEach(emp => {
+        if (attendanceData[emp.name] && attendanceData[emp.name][today]) {
+          activeToday++;
+        }
+      });
+      document.getElementById('activeToday').textContent = activeToday;
+    }
+
+    function renderEmployees() {
+      const list = getEmployees();
+      const ul = document.getElementById('employeeList');
+      const emptyState = document.getElementById('emptyState');
+      const attendanceData = JSON.parse(localStorage.getItem(getCurrentAdminKey('attendanceData')) || '{}');
+      const today = new Date().toISOString().split('T')[0];
+      ul.innerHTML = '';
+      if (list.length === 0) {
+        emptyState.classList.remove('hidden');
+        updateStats();
+        return;
+      }
+      emptyState.classList.add('hidden');
+      list.forEach((emp, idx) => {
+        // Determine if employee is active (timed in today, not yet timed out)
+        let isActive = false;
+        let isOnLunch = false;
+        let isOnSnack = false;
+        if (
+          attendanceData[emp.name] &&
+          attendanceData[emp.name][today] &&
+          attendanceData[emp.name][today].timeIn &&
+          !attendanceData[emp.name][today].timeOut
+        ) {
+          isActive = true;
+        }
+        // Check for lunch/snack status
+        if (
+          attendanceData[emp.name] &&
+          attendanceData[emp.name][today] &&
+          attendanceData[emp.name][today].lunchIn &&
+          !attendanceData[emp.name][today].lunchOut
+        ) {
+          isOnLunch = true;
+        }
+        if (
+          attendanceData[emp.name] &&
+          attendanceData[emp.name][today] &&
+          attendanceData[emp.name][today].snackIn &&
+          !attendanceData[emp.name][today].snackOut
+        ) {
+          isOnSnack = true;
+        }
+        const li = document.createElement('li');
+        li.className = "bg-white/90 dark:bg-gray-800/90 rounded-xl p-4 shadow-md backdrop-blur-sm border border-blue-200/50 dark:border-gray-600/50 animate-slide-in";
+        li.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <i class="fas fa-user text-cyan-600 dark:text-cyan-400 text-xl mr-4"></i>
+              <div>
+                <span class="text-lg font-semibold text-blue-800 dark:text-cyan-200">${emp.name}</span>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Started: ${emp.startDate || 'Not set'}</div>
+              </div>
+              ${isActive ? `<span class='ml-3 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold border border-green-300 dark:bg-green-900/40 dark:text-green-200 dark:border-green-700 animate-pulse'>Active</span>` : ''}
+              ${isOnLunch ? `<span class='ml-2 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold border border-yellow-300 dark:bg-yellow-900/40 dark:text-yellow-200 dark:border-yellow-700 animate-pulse'>Lunch</span>` : ''}
+              ${isOnSnack ? `<span class='ml-2 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-bold border border-pink-300 dark:bg-pink-900/40 dark:text-pink-200 dark:border-pink-700 animate-pulse'>Snack</span>` : ''}
+            </div>
+            <div class="flex space-x-2">
+              <button 
+                onclick="editEmployee(${idx})" 
+                class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:from-yellow-600 hover:to-yellow-700 transform hover:scale-105 transition-all duration-300"
+              >
+                <i class="fas fa-edit mr-1"></i>Edit
+              </button>
+              <button 
+                onclick="deleteEmployee(${idx})" 
+                class="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:from-red-600 hover:to-red-700 transform hover:scale-105 transition-all duration-300"
+              >
+                <i class="fas fa-trash mr-1"></i>Delete
+              </button>
+            </div>
+          </div>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    function addEmployee(name) {
+      console.log('addEmployee called with:', name);
+      const list = getEmployees();
+      console.log('Current employees:', list);
+      
+      const startDate = document.getElementById('employeeStartDate').value;
+      
+      // Validate inputs
+      if (!name || !startDate) {
+        showNotification('Please enter both employee name and start date!', 'error');
+        return false;
+      }
+      
+      // Check for duplicates
+      if (list.some(emp => emp.name.toLowerCase() === name.toLowerCase())) {
+        console.log('Duplicate employee found');
+        showNotification('Employee already exists!', 'error');
+        return false;
+      }
+      
+      list.push({ name: name, startDate: startDate });
+      console.log('Employee added to list:', list);
+      setEmployees(list);
+      console.log('Employees saved to localStorage');
+      renderEmployees();
+      updateStats();
+      showNotification(`Employee "${name}" added successfully!`);
+      return true;
+    }
+
+    function editEmployee(idx) {
+      const list = getEmployees();
+      const currentEmp = list[idx];
+      const newName = prompt('Enter new name:', currentEmp.name);
+      const newStartDate = prompt('Enter new start date (YYYY-MM-DD):', currentEmp.startDate);
+      
+      if (newName && newName.trim() !== '') {
+        const trimmedName = newName.trim();
+        
+        // Check for duplicates (excluding current item)
+        if (list.some((emp, i) => i !== idx && emp.name.toLowerCase() === trimmedName.toLowerCase())) {
+          showNotification('Employee name already exists!', 'error');
+          return;
+        }
+        
+        list[idx] = { name: trimmedName, startDate: newStartDate || currentEmp.startDate };
+        setEmployees(list);
+        renderEmployees();
+        updateStats();
+        showNotification(`Employee updated to "${trimmedName}" successfully!`);
+      }
+    }
+
+    function deleteEmployee(idx) {
+      const list = getEmployees();
+      const employeeName = list[idx].name;
+      
+      if (confirm(`Are you sure you want to permanently delete "${employeeName}"?\n\nThis will remove all their:\n• Attendance records\n• Salary data\n• Time tracking history\n\nThis action cannot be undone!`)) {
+        // Remove from employees list
+        list.splice(idx, 1);
+        setEmployees(list);
+        
+        // Remove attendance data
+        const attendanceData = JSON.parse(localStorage.getItem('attendanceData') || '{}');
+        if (attendanceData[employeeName]) {
+          delete attendanceData[employeeName];
+          localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+        }
+        
+        // Remove salary data
+        const salaryData = JSON.parse(localStorage.getItem('employeeSalaries') || '{}');
+        if (salaryData[employeeName]) {
+          delete salaryData[employeeName];
+          localStorage.setItem('employeeSalaries', JSON.stringify(salaryData));
+        }
+        
+        renderEmployees();
+        updateStats();
+        showNotification(`Employee "${employeeName}" and all their data have been permanently deleted!`);
+      }
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM Content Loaded - Initializing employee management');
+      
+      // Migrate existing employee data if needed
+      migrateEmployeeData();
+      
+      // Remove sample data population. Only render existing employees from localStorage.
+      // Render initial employee list
+      renderEmployees();
+      updateStats();
+      console.log('Initial employee list rendered');
+
+      // Button Click Handler - Prevents page refresh
+      const addButton = document.getElementById('addEmployeeBtn');
+      console.log('Add button found:', addButton);
+      
+      addButton.addEventListener('click', function(e) {
+        console.log('Add Employee button clicked!');
+        e.preventDefault(); // Extra safety to prevent any default behavior
+        e.stopPropagation(); // Stop event bubbling
+        
+        const input = document.getElementById('employeeName');
+        const name = input.value.trim();
+        const startDateInput = document.getElementById('employeeStartDate');
+        const startDate = startDateInput.value;
+
+        console.log('Input value:', name);
+        console.log('Start Date:', startDate);
+        
+        if (name) {
+          console.log('Calling addEmployee function...');
+          if (addEmployee(name)) {
+            input.value = ''; // Clear the input only if addition was successful
+            startDateInput.value = ''; // Clear the start date input
+            input.focus(); // Keep focus on the input for better UX
+            console.log('Employee added successfully, input cleared');
+          }
+        } else {
+          console.log('Empty name entered');
+          showNotification('Please enter a valid employee name!', 'error');
+        }
+        
+        return false; // Extra safety to prevent any form submission
+      });
+
+      // Also handle Enter key press in the input field
+      document.getElementById('employeeName').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault(); // Prevent form submission
+          e.stopPropagation(); // Stop event bubbling
+          document.getElementById('addEmployeeBtn').click(); // Trigger button click
+          return false; // Extra safety
+        }
+      });
+
+      // Prevent any form submission on the entire page
+      document.addEventListener('submit', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      });
+    });
+
+    // Migration function to convert old employee data format
+    function migrateEmployeeData() {
+      const list = getEmployees();
+      let needsMigration = false;
+      
+      // Check if any employees are stored as strings (old format)
+      list.forEach((emp, index) => {
+        if (typeof emp === 'string') {
+          needsMigration = true;
+          // Convert string to object with current date as start date
+          list[index] = { 
+            name: emp, 
+            startDate: new Date().toISOString().split('T')[0] 
+          };
+        }
+      });
+      
+      if (needsMigration) {
+        setEmployees(list);
+        console.log('Employee data migrated to new format');
+      }
+    }
+
+    // Expose functions globally for onclick handlers
+    window.deleteEmployee = deleteEmployee;
+    window.editEmployee = editEmployee;
+  </script>
+</body>
+</html>

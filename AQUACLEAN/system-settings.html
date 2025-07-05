@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Settings | AquaClean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-200 via-cyan-100 to-blue-400 min-h-screen font-sans relative overflow-x-hidden">
+  <!-- Back Arrow -->
+  <a href="admin-panel.html" class="fixed top-6 left-6 flex items-center gap-3 z-50 px-5 py-3 rounded-2xl bg-white/30 dark:bg-gray-900/40 shadow-lg border border-cyan-200/40 dark:border-cyan-800/40 backdrop-blur-xl text-blue-900 dark:text-cyan-200 font-bold text-xl hover:bg-cyan-100/60 hover:dark:bg-cyan-900/60 hover:text-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition-all duration-300 group" aria-label="Back to Admin Panel">
+    <i class="fas fa-arrow-left text-3xl group-hover:-translate-x-1 transition-transform duration-300"></i>
+    <span class="hidden sm:inline">Back to Admin Panel</span>
+  </a>
+  <!-- Header -->
+  <header class="text-center py-10">
+    <h1 class="text-4xl font-bold text-gray-700 mb-2 drop-shadow">System Settings</h1>
+    <div id="adminRoleIndicator" class="mb-2"></div>
+    <p class="text-lg text-gray-500 mb-6">Configure system preferences and advanced options</p>
+  </header>
+  <!-- Settings Navigation -->
+  <section class="max-w-2xl mx-auto mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- General Settings Card -->
+      <div class="bg-white/90 border-2 border-blue-400/40 rounded-2xl shadow-xl p-8 flex flex-col items-center justify-center ring-2 ring-blue-400/30">
+        <i class="fas fa-cogs text-3xl text-blue-600 mb-4"></i>
+        <h3 class="text-xl font-bold text-blue-700 mb-2">General Settings</h3>
+        <p class="text-blue-500 mb-4 text-center">System preferences and options</p>
+        <span class="inline-block bg-blue-100 text-blue-700 font-semibold px-6 py-2 rounded-full">Current Page</span>
+      </div>
+      <!-- Backup & Restore Card -->
+      <a href="system-backup.html" class="bg-white/90 border-2 border-cyan-400/40 rounded-2xl shadow-xl p-8 flex flex-col items-center justify-center ring-2 ring-cyan-400/30 hover:scale-105 transition-transform">
+        <i class="fas fa-database text-3xl text-cyan-600 mb-4"></i>
+        <h3 class="text-xl font-bold text-cyan-700 mb-2">Backup & Restore</h3>
+        <p class="text-cyan-500 mb-4 text-center">Export or import your system data</p>
+        <span class="inline-block bg-cyan-100 text-cyan-700 font-semibold px-6 py-2 rounded-full">Go to Backup</span>
+      </a>
+      <!-- Report Sales Card -->
+      <button onclick="openReportSalesModal()" class="bg-gradient-to-br from-blue-50 via-cyan-100 to-blue-100 border-2 border-blue-300/40 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center ring-2 ring-blue-300/30 hover:scale-105 hover:shadow-3xl transition-transform focus:outline-none relative group overflow-hidden">
+        <span class="absolute top-4 right-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow group-hover:scale-110 transition-transform">Monthly</span>
+        <div class="bg-gradient-to-br from-blue-200 via-cyan-200 to-blue-100 p-5 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition">
+          <i class="fas fa-chart-line text-4xl text-blue-600 group-hover:scale-110 transition-transform"></i>
+        </div>
+        <h3 class="text-2xl font-extrabold text-blue-700 mb-2 drop-shadow">Report Sales</h3>
+        <p class="text-blue-500 mb-4 text-center">Monthly sales summary and export</p>
+        <span class="inline-block bg-gradient-to-r from-blue-400 to-cyan-400 text-white font-semibold px-6 py-2 rounded-full shadow group-hover:from-blue-500 group-hover:to-cyan-500 transition">View Report</span>
+      </button>
+      <!-- Report Inventory Card -->
+      <button onclick="openReportInventoryModal()" class="bg-gradient-to-br from-cyan-50 via-blue-100 to-cyan-100 border-2 border-cyan-300/40 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center ring-2 ring-cyan-300/30 hover:scale-105 hover:shadow-3xl transition-transform focus:outline-none relative group overflow-hidden">
+        <span class="absolute top-4 right-4 bg-cyan-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow group-hover:scale-110 transition-transform">Monthly</span>
+        <div class="bg-gradient-to-br from-cyan-200 via-blue-200 to-cyan-100 p-5 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition">
+          <i class="fas fa-boxes text-4xl text-cyan-600 group-hover:scale-110 transition-transform"></i>
+        </div>
+        <h3 class="text-2xl font-extrabold text-cyan-700 mb-2 drop-shadow">Report Inventory</h3>
+        <p class="text-cyan-500 mb-4 text-center">Monthly inventory usage and export</p>
+        <span class="inline-block bg-gradient-to-r from-cyan-400 to-blue-400 text-white font-semibold px-6 py-2 rounded-full shadow group-hover:from-cyan-500 group-hover:to-blue-500 transition">View Report</span>
+      </button>
+      <!-- Reset Sales & Inventory Card -->
+      <button onclick="openResetModal()" class="bg-gradient-to-br from-red-50 via-pink-100 to-red-100 border-2 border-red-300/40 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center ring-2 ring-red-300/30 hover:scale-105 hover:shadow-3xl transition-transform focus:outline-none relative group overflow-hidden">
+        <span class="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow group-hover:scale-110 transition-transform">Danger</span>
+        <div class="bg-gradient-to-br from-red-200 via-pink-200 to-red-100 p-5 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition">
+          <i class="fas fa-exclamation-triangle text-4xl text-red-600 group-hover:scale-110 transition-transform"></i>
+        </div>
+        <h3 class="text-2xl font-extrabold text-red-700 mb-2 drop-shadow">Reset Sales & Inventory</h3>
+        <p class="text-red-500 mb-4 text-center">Permanently delete all laundry and water sales and inventory data</p>
+        <span class="inline-block bg-gradient-to-r from-red-400 to-pink-400 text-white font-semibold px-6 py-2 rounded-full shadow group-hover:from-red-500 group-hover:to-pink-500 transition">Reset Data</span>
+      </button>
+      <!-- Employee Salary Report Card -->
+      <button onclick="openSalaryReportModal()" class="bg-gradient-to-br from-green-50 via-emerald-100 to-green-100 border-2 border-green-300/40 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center ring-2 ring-green-300/30 hover:scale-105 hover:shadow-3xl transition-transform focus:outline-none relative group overflow-hidden">
+        <span class="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow group-hover:scale-110 transition-transform">Monthly</span>
+        <div class="bg-gradient-to-br from-green-200 via-emerald-200 to-green-100 p-5 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition">
+          <i class="fas fa-money-check-alt text-4xl text-green-600 group-hover:scale-110 transition-transform"></i>
+        </div>
+        <h3 class="text-2xl font-extrabold text-green-700 mb-2 drop-shadow">Salary Report</h3>
+        <p class="text-green-500 mb-4 text-center">Monthly employee salary summary and export</p>
+        <span class="inline-block bg-gradient-to-r from-green-400 to-emerald-400 text-white font-semibold px-6 py-2 rounded-full shadow group-hover:from-green-500 group-hover:to-emerald-500 transition">View Report</span>
+      </button>
+      <!-- Employee Attendance Report Card -->
+      <button onclick="openAttendanceReportModal()" class="bg-gradient-to-br from-purple-50 via-violet-100 to-purple-100 border-2 border-purple-300/40 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center ring-2 ring-purple-300/30 hover:scale-105 hover:shadow-3xl transition-transform focus:outline-none relative group overflow-hidden">
+        <span class="absolute top-4 right-4 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow group-hover:scale-110 transition-transform">Monthly</span>
+        <div class="bg-gradient-to-br from-purple-200 via-violet-200 to-purple-100 p-5 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition">
+          <i class="fas fa-calendar-check text-4xl text-purple-600 group-hover:scale-110 transition-transform"></i>
+        </div>
+        <h3 class="text-2xl font-extrabold text-purple-700 mb-2 drop-shadow">Attendance Report</h3>
+        <p class="text-purple-500 mb-4 text-center">Monthly employee attendance summary and export</p>
+        <span class="inline-block bg-gradient-to-r from-purple-400 to-violet-400 text-white font-semibold px-6 py-2 rounded-full shadow group-hover:from-purple-500 group-hover:to-violet-500 transition">View Report</span>
+      </button>
+      <!-- Employee Management Report Card -->
+      <button onclick="openEmployeeManagementReportModal()" class="bg-gradient-to-br from-indigo-50 via-blue-100 to-indigo-100 border-2 border-indigo-300/40 rounded-2xl shadow-2xl p-8 flex flex-col items-center justify-center ring-2 ring-indigo-300/30 hover:scale-105 hover:shadow-3xl transition-transform focus:outline-none relative group overflow-hidden">
+        <span class="absolute top-4 right-4 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow group-hover:scale-110 transition-transform">Current</span>
+        <div class="bg-gradient-to-br from-indigo-200 via-blue-200 to-indigo-100 p-5 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition">
+          <i class="fas fa-user-tie text-4xl text-indigo-600 group-hover:scale-110 transition-transform"></i>
+        </div>
+        <h3 class="text-2xl font-extrabold text-indigo-700 mb-2 drop-shadow">Employee Management</h3>
+        <p class="text-indigo-500 mb-4 text-center">Employee start dates and tenure information</p>
+        <span class="inline-block bg-gradient-to-r from-indigo-400 to-blue-400 text-white font-semibold px-6 py-2 rounded-full shadow group-hover:from-indigo-500 group-hover:to-blue-500 transition">View Report</span>
+      </button>
+
+    </div>
+  </section>
+  <!-- Admin Accounts Section -->
+  <section id="adminAccountsSection" class="max-w-2xl mx-auto mb-12">
+    <div class="bg-white/90 border-2 border-blue-400/40 rounded-2xl shadow-xl p-8 flex flex-col items-center justify-center ring-2 ring-blue-400/30">
+      <i class="fas fa-user-shield text-3xl text-blue-600 mb-4"></i>
+      <h3 class="text-xl font-bold text-blue-700 mb-2">Admin Accounts</h3>
+      <p class="text-blue-500 mb-4 text-center">Add, view, or delete admin users</p>
+      <form id="addAdminForm" class="flex flex-col gap-3 mb-4 w-full max-w-sm mx-auto">
+        <input type="text" id="newAdminUser" placeholder="Username" class="px-4 py-2 rounded border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition" required>
+        <input type="password" id="newAdminPass" placeholder="Password" class="px-4 py-2 rounded border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition" required>
+        <button type="submit" class="bg-gradient-to-r from-blue-700 to-cyan-400 text-white px-6 py-2 rounded-full font-bold shadow hover:from-blue-800 hover:to-cyan-500 transition">Create Admin Account</button>
+      </form>
+      <div id="adminAccountsList" class="text-left w-full max-w-sm mx-auto">
+        <!-- Main admin and other admin accounts will be listed here -->
+      </div>
+    </div>
+    <!-- Confirmation Modal -->
+    <div id="confirmDeleteModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-xl shadow-xl p-8 max-w-sm w-full text-center relative">
+        <button onclick="closeConfirmDelete()" class="absolute top-2 right-3 text-2xl text-gray-500 hover:text-blue-600">&times;</button>
+        <h3 class="text-2xl font-bold mb-4 text-blue-700">Confirm Delete</h3>
+        <div class="mb-4 text-gray-700">Are you sure you want to delete admin account <span id="deleteUser" class="font-bold"></span>?</div>
+        <div class="flex justify-center gap-4 mt-6">
+          <button onclick="confirmDeleteAdmin()" class="bg-red-500 hover:bg-red-700 text-white px-6 py-2 rounded-full font-bold shadow transition">Delete</button>
+          <button onclick="closeConfirmDelete()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-full font-bold shadow hover:bg-gray-400 transition">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Settings Placeholder -->
+  <section class="max-w-2xl mx-auto mb-16 bg-white/90 backdrop-blur-xl border border-blue-100 rounded-2xl shadow-xl p-8 text-center">
+    <h2 class="text-2xl font-bold text-blue-700 mb-4">Settings Coming Soon</h2>
+    <p class="text-gray-600">This page will allow you to configure advanced system preferences in the future.</p>
+  </section>
+  <!-- Report Sales Modal -->
+  <div id="reportSalesModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl p-0 max-w-2xl w-full text-center relative overflow-hidden animate-fade-in">
+      <div class="bg-gradient-to-r from-blue-600 to-cyan-500 py-6 px-8 flex flex-col items-center justify-center">
+        <i class="fas fa-chart-line text-5xl text-white mb-2 drop-shadow"></i>
+        <h3 class="text-3xl font-extrabold mb-1 text-white drop-shadow">Monthly Sales Report</h3>
+        <div class="text-cyan-100 text-sm mb-2">Automatically generated at the end of each month</div>
+        <button onclick="closeReportSalesModal()" class="absolute top-4 right-6 text-3xl text-white/80 hover:text-white transition">&times;</button>
+      </div>
+      <div id="reportSalesContent" class="mb-6 text-left max-h-96 overflow-y-auto p-8 bg-white/90 rounded-b-3xl">
+        Loading...
+      </div>
+      <div class="pb-8">
+        <button onclick="downloadSalesReportCSV()" class="bg-gradient-to-r from-blue-700 to-cyan-400 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:from-blue-800 hover:to-cyan-500 hover:scale-105 transition text-lg flex items-center gap-2 mx-auto">
+          <i class="fas fa-download"></i> Download CSV
+        </button>
+        <div class="text-xs text-gray-400 mt-2">Download a copy of this report for your records</div>
+      </div>
+    </div>
+  </div>
+  <!-- Report Inventory Modal -->
+  <div id="reportInventoryModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl p-0 max-w-2xl w-full text-center relative overflow-hidden animate-fade-in">
+      <div class="bg-gradient-to-r from-cyan-600 to-blue-500 py-6 px-8 flex flex-col items-center justify-center">
+        <i class="fas fa-boxes text-5xl text-white mb-2 drop-shadow"></i>
+        <h3 class="text-3xl font-extrabold mb-1 text-white drop-shadow">Monthly Inventory Report</h3>
+        <div class="text-blue-100 text-sm mb-2">Automatically generated at the end of each month</div>
+        <button onclick="closeReportInventoryModal()" class="absolute top-4 right-6 text-3xl text-white/80 hover:text-white transition">&times;</button>
+      </div>
+      <div id="reportInventoryContent" class="mb-6 text-left max-h-96 overflow-y-auto p-8 bg-white/90 rounded-b-3xl">
+        Loading...
+      </div>
+      <div class="pb-8">
+        <button onclick="downloadInventoryReportCSV()" class="bg-gradient-to-r from-cyan-700 to-blue-400 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:from-cyan-800 hover:to-blue-500 hover:scale-105 transition text-lg flex items-center gap-2 mx-auto">
+          <i class="fas fa-download"></i> Download CSV
+        </button>
+        <div class="text-xs text-gray-400 mt-2">Download a copy of this report for your records</div>
+      </div>
+    </div>
+  </div>
+  <!-- Reset Modal -->
+  <div id="resetModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl p-0 max-w-md w-full text-center relative overflow-hidden animate-fade-in">
+      <div class="bg-gradient-to-r from-red-600 to-pink-500 py-6 px-8 flex flex-col items-center justify-center">
+        <i class="fas fa-exclamation-triangle text-5xl text-white mb-2 drop-shadow"></i>
+        <h3 class="text-3xl font-extrabold mb-1 text-white drop-shadow">Confirm Reset</h3>
+        <div class="text-pink-100 text-sm mb-2">This will <b>permanently delete</b> all laundry and water sales and inventory data. This action cannot be undone.</div>
+        <button onclick="closeResetModal()" class="absolute top-4 right-6 text-3xl text-white/80 hover:text-white transition">&times;</button>
+      </div>
+      <form id="resetForm" class="p-8 bg-white/90 rounded-b-3xl flex flex-col gap-4">
+        <input type="text" id="resetUsername" class="px-4 py-3 rounded-xl border border-red-200 focus:border-red-500 focus:bg-red-50 transition text-lg" placeholder="Admin Username" required>
+        <input type="password" id="resetPassword" class="px-4 py-3 rounded-xl border border-red-200 focus:border-red-500 focus:bg-red-50 transition text-lg" placeholder="Admin Password" required>
+        <button type="submit" class="bg-gradient-to-r from-red-600 to-pink-400 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:from-red-700 hover:to-pink-500 hover:scale-105 transition text-lg flex items-center gap-2 mx-auto">Reset Now</button>
+        <div id="resetError" class="text-red-600 font-bold text-sm mt-2 hidden"></div>
+        <div id="resetSuccess" class="text-green-600 font-bold text-sm mt-2 hidden"></div>
+      </form>
+    </div>
+  </div>
+  <!-- Success Popup -->
+  <div id="resetSuccessPopup" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-xl p-8 max-w-xs w-full text-center relative">
+      <h3 class="text-2xl font-bold mb-4 text-green-700">Success</h3>
+      <div class="mb-4 text-gray-700">You have successfully reset.</div>
+      <button onclick="closeResetSuccessPopup()" class="bg-green-500 hover:bg-green-700 text-white px-6 py-2 rounded-full font-bold shadow transition">OK</button>
+    </div>
+  </div>
+  <!-- Reusable Modal System -->
+  <div id="customModalBackdrop" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div id="customModal" class="bg-white rounded-xl shadow-xl p-8 max-w-xs w-full text-center relative">
+      <div id="customModalIcon" class="mb-4"></div>
+      <h3 id="customModalTitle" class="text-2xl font-bold mb-2"></h3>
+      <div id="customModalMessage" class="mb-4 text-gray-700"></div>
+      <input id="customModalInput" class="hidden px-4 py-2 rounded border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition mb-4 w-full" />
+      <div class="flex justify-center gap-4 mt-4">
+        <button id="customModalCancel" class="hidden bg-gray-300 text-gray-700 px-6 py-2 rounded-full font-bold shadow hover:bg-gray-400 transition"></button>
+        <button id="customModalOk" class="bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow transition"></button>
+      </div>
+    </div>
+  </div>
+  <!-- Salary Report Modal -->
+  <div id="salaryReportModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl p-0 max-w-2xl w-full text-center relative overflow-hidden animate-fade-in">
+      <div class="bg-gradient-to-r from-green-600 to-emerald-500 py-6 px-8 flex flex-col items-center justify-center">
+        <i class="fas fa-money-check-alt text-5xl text-white mb-2 drop-shadow"></i>
+        <h3 class="text-3xl font-extrabold mb-1 text-white drop-shadow">Monthly Salary Report</h3>
+        <div class="text-emerald-100 text-sm mb-2">Automatically generated at the end of each month</div>
+        <button onclick="closeSalaryReportModal()" class="absolute top-4 right-6 text-3xl text-white/80 hover:text-white transition">&times;</button>
+      </div>
+      <div id="salaryReportContent" class="mb-6 text-left max-h-96 overflow-y-auto p-8 bg-white/90 rounded-b-3xl">
+        Loading...
+      </div>
+      <div class="pb-8">
+        <button onclick="downloadSalaryReportCSV()" class="bg-gradient-to-r from-green-700 to-emerald-400 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:from-green-800 hover:to-emerald-500 hover:scale-105 transition text-lg flex items-center gap-2 mx-auto">
+          <i class="fas fa-download"></i> Download CSV
+        </button>
+        <div class="text-xs text-gray-400 mt-2">Download a copy of this report for your records</div>
+      </div>
+    </div>
+  </div>
+  <!-- Attendance Report Modal -->
+  <div id="attendanceReportModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl p-0 max-w-2xl w-full text-center relative overflow-hidden animate-fade-in">
+      <div class="bg-gradient-to-r from-purple-600 to-violet-500 py-6 px-8 flex flex-col items-center justify-center">
+        <i class="fas fa-calendar-check text-5xl text-white mb-2 drop-shadow"></i>
+        <h3 class="text-3xl font-extrabold mb-1 text-white drop-shadow">Monthly Attendance Report</h3>
+        <div class="text-violet-100 text-sm mb-2">Automatically generated at the end of each month</div>
+        <button onclick="closeAttendanceReportModal()" class="absolute top-4 right-6 text-3xl text-white/80 hover:text-white transition">&times;</button>
+      </div>
+      <div id="attendanceReportContent" class="mb-6 text-left max-h-96 overflow-y-auto p-8 bg-white/90 rounded-b-3xl">
+        Loading...
+      </div>
+      <div class="pb-8">
+        <button onclick="downloadAttendanceReportCSV()" class="bg-gradient-to-r from-purple-700 to-violet-400 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:from-purple-800 hover:to-violet-500 hover:scale-105 transition text-lg flex items-center gap-2 mx-auto">
+          <i class="fas fa-download"></i> Download CSV
+        </button>
+        <div class="text-xs text-gray-400 mt-2">Download a copy of this report for your records</div>
+      </div>
+    </div>
+  </div>
+  <!-- Employee Management Report Modal -->
+  <div id="employeeManagementReportModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl p-0 max-w-2xl w-full text-center relative overflow-hidden animate-fade-in">
+      <div class="bg-gradient-to-r from-indigo-600 to-blue-500 py-6 px-8 flex flex-col items-center justify-center">
+        <i class="fas fa-user-tie text-5xl text-white mb-2 drop-shadow"></i>
+        <h3 class="text-3xl font-extrabold mb-1 text-white drop-shadow">Employee Management Report</h3>
+        <div class="text-blue-100 text-sm mb-2">Current employee information and tenure</div>
+        <button onclick="closeEmployeeManagementReportModal()" class="absolute top-4 right-6 text-3xl text-white/80 hover:text-white transition">&times;</button>
+      </div>
+      <div id="employeeManagementReportContent" class="mb-6 text-left max-h-96 overflow-y-auto p-8 bg-white/90 rounded-b-3xl">
+        Loading...
+      </div>
+      <div class="pb-8">
+        <button onclick="downloadEmployeeManagementReportCSV()" class="bg-gradient-to-r from-indigo-700 to-blue-400 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:from-indigo-800 hover:to-blue-500 hover:scale-105 transition text-lg flex items-center gap-2 mx-auto">
+          <i class="fas fa-download"></i> Download CSV
+        </button>
+        <div class="text-xs text-gray-400 mt-2">Download a copy of this report for your records</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="relative z-10 bg-blue-700 text-white text-center py-4 mt-12 rounded-t-3xl shadow-lg">
+    &copy; <span id="year"></span> AquaClean Laundry & Water Refilling Station. All rights reserved.
+  </footer>
+  <script>
+    // Auto-update Footer Year
+    window.addEventListener('DOMContentLoaded', function() {
+      const yearSpan = document.getElementById('year');
+      if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+      renderAdminAccounts();
+      // Admin role indicator
+      const user = (localStorage.getItem('adminUser') || '').trim();
+      const indicator = document.getElementById('adminRoleIndicator');
+      if (indicator) {
+        if (user.toLowerCase() === 'admin') {
+          indicator.innerHTML = `<span class='inline-flex items-center bg-yellow-100 text-yellow-800 font-bold px-4 py-1 rounded-full'><i class='fas fa-crown mr-2 text-yellow-500'></i>Main Admin: <span class='ml-1'>${user}</span></span>`;
+        } else if (user) {
+          indicator.innerHTML = `<span class='inline-flex items-center bg-blue-100 text-blue-800 font-bold px-4 py-1 rounded-full'><i class='fas fa-user-shield mr-2 text-blue-500'></i>Admin User: <span class='ml-1'>${user}</span></span>`;
+        } else {
+          indicator.innerHTML = "";
+        }
+      }
+      // Hide Admin Accounts section for non-main admin
+      const adminAccountsSection = document.getElementById('adminAccountsSection');
+      if (user !== 'admin' && adminAccountsSection) {
+        adminAccountsSection.style.display = 'none';
+      }
+    });
+    function getAdminAccounts() {
+      return JSON.parse(localStorage.getItem('adminAccounts') || '[{"user":"admin","pass":"password"}]');
+    }
+    function setAdminAccounts(list) {
+      localStorage.setItem('adminAccounts', JSON.stringify(list));
+    }
+    function renderAdminAccounts() {
+      const list = getAdminAccounts();
+      const container = document.getElementById('adminAccountsList');
+      if (!list.length) {
+        container.innerHTML = '<div class="text-gray-500">No admin accounts found.</div>';
+        return;
+      }
+      // Separate main admin and other admins
+      const mainAdmin = list.find(acc => acc.user && acc.user.trim().toLowerCase() === 'admin');
+      const otherAdmins = list.filter(acc => !(acc.user && acc.user.trim().toLowerCase() === 'admin'));
+      let html = '';
+      if (mainAdmin) {
+        html += `
+          <div class="mb-6 p-4 bg-blue-100 border-2 border-blue-400 rounded-xl flex items-center justify-between">
+            <span class="font-semibold text-blue-900 text-lg flex items-center gap-2"><i class='fas fa-crown text-yellow-500'></i> Main Admin: ${mainAdmin.user}</span>
+            <span class="text-xs text-blue-500 font-bold">Cannot be deleted</span>
+          </div>
+        `;
+      }
+      if (otherAdmins.length) {
+        html += '<div class="mb-2 text-blue-700 font-semibold">Other Admin Accounts</div>';
+        html += otherAdmins.map((acc, idx) => {
+          // Find the index in the original list for delete
+          const origIdx = list.findIndex(a => a.user === acc.user && a.pass === acc.pass);
+          return `
+            <div class="flex items-center justify-between py-2 border-b">
+              <span class="font-semibold text-blue-700">${acc.user}</span>
+              <button onclick="showConfirmDelete(${origIdx})" class="bg-red-500 hover:bg-red-700 text-white rounded px-3 py-1 text-xs font-bold ml-4">Delete</button>
+            </div>
+          `;
+        }).join('');
+      } else {
+        html += '<div class="text-gray-400 italic">No other admin accounts.</div>';
+      }
+      container.innerHTML = html;
+    }
+    document.getElementById('addAdminForm').onsubmit = function(e) {
+      e.preventDefault();
+      const user = document.getElementById('newAdminUser').value.trim();
+      const pass = document.getElementById('newAdminPass').value;
+      if (!user || !pass) return;
+      const list = getAdminAccounts();
+      if (list.some(acc => acc.user.toLowerCase() === user.toLowerCase())) {
+        showCustomAlert('Admin username already exists!', 'Error', 'error').then(() => {
+          this.reset();
+        });
+        return;
+      }
+      list.push({ user, pass });
+      setAdminAccounts(list);
+      renderAdminAccounts();
+      this.reset();
+    };
+    // Delete confirmation modal logic
+    let deleteIdx = null;
+    function showConfirmDelete(idx) {
+      deleteIdx = idx;
+      const list = getAdminAccounts();
+      document.getElementById('deleteUser').textContent = list[idx].user;
+      document.getElementById('confirmDeleteModal').classList.remove('hidden');
+    }
+    function closeConfirmDelete() {
+      document.getElementById('confirmDeleteModal').classList.add('hidden');
+      deleteIdx = null;
+    }
+    function confirmDeleteAdmin() {
+      if (deleteIdx === null) return;
+      const list = getAdminAccounts();
+      const acc = list[deleteIdx];
+      // Prevent deletion of main admin (username 'admin', case-insensitive, trimmed)
+      if (acc.user && acc.user.trim().toLowerCase() === 'admin') {
+        showCustomAlert('The main admin account cannot be deleted.', 'Error', 'error');
+        closeConfirmDelete();
+        return;
+      }
+      list.splice(deleteIdx, 1);
+      setAdminAccounts(list);
+      renderAdminAccounts();
+      closeConfirmDelete();
+    }
+    // --- Helper: Get previous month range ---
+    function getPreviousMonthRange() {
+      const now = new Date();
+      const year = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+      const month = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+      const start = new Date(year, month, 1, 0, 0, 0, 0);
+      const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+      return { start, end, year, month: month + 1 };
+    }
+    // --- Report Modals Logic ---
+    function openReportSalesModal() {
+      document.getElementById('reportSalesModal').classList.remove('hidden');
+      renderSalesReport();
+    }
+    function closeReportSalesModal() {
+      document.getElementById('reportSalesModal').classList.add('hidden');
+    }
+    function openReportInventoryModal() {
+      document.getElementById('reportInventoryModal').classList.remove('hidden');
+      renderInventoryReport();
+    }
+    function closeReportInventoryModal() {
+      document.getElementById('reportInventoryModal').classList.add('hidden');
+    }
+    function openSalaryReportModal() {
+      document.getElementById('salaryReportModal').classList.remove('hidden');
+      renderSalaryReport();
+    }
+    function closeSalaryReportModal() {
+      document.getElementById('salaryReportModal').classList.add('hidden');
+    }
+    function openAttendanceReportModal() {
+      document.getElementById('attendanceReportModal').classList.remove('hidden');
+      renderAttendanceReport();
+    }
+    function closeAttendanceReportModal() {
+      document.getElementById('attendanceReportModal').classList.add('hidden');
+    }
+    function openEmployeeManagementReportModal() {
+      document.getElementById('employeeManagementReportModal').classList.remove('hidden');
+      renderEmployeeManagementReport();
+    }
+    function closeEmployeeManagementReportModal() {
+      document.getElementById('employeeManagementReportModal').classList.add('hidden');
+    }
+    // Add a helper for formatting date
+    function formatDateTime(dt) {
+      if (!dt) return '';
+      const d = new Date(dt);
+      if (isNaN(d.getTime())) return dt;
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+    // --- Sales Report Logic ---
+    function renderSalesReport() {
+      try {
+        const { start, end, year, month } = getPreviousMonthRange();
+        const laundrySales = JSON.parse(localStorage.getItem('laundrySales') || '[]');
+        const waterSales = JSON.parse(localStorage.getItem('waterSales') || '[]');
+        const allSales = [...laundrySales, ...waterSales].filter(sale => {
+          const date = new Date(sale.date || sale.timestamp || sale.createdAt || sale.time || 0);
+          return date >= start && date <= end;
+        });
+        let html = `<div class='mb-2 font-semibold'>Report for ${year}-${String(month).padStart(2,'0')}</div>`;
+        if (!allSales.length) {
+          html += `<div class='text-gray-500'>No sales records for this month.</div>`;
+          document.getElementById('reportSalesContent').innerHTML = html;
+          return;
+        }
+        html += `<table class='min-w-full text-left border-collapse text-sm'><thead><tr class='bg-blue-100 text-blue-700'><th class='py-2 px-2'>Date</th><th class='py-2 px-2'>Type</th><th class='py-2 px-2'>Customer</th><th class='py-2 px-2'>Amount</th><th class='py-2 px-2'>Payment</th><th class='py-2 px-2'>Status</th></tr></thead><tbody>`;
+        let total = 0;
+        allSales.forEach(sale => {
+          const type = sale.items ? 'Laundry' : 'Water';
+          const date = formatDateTime(sale.date || sale.timestamp || sale.createdAt || sale.time || '');
+          const customer = sale.customer || sale.customerName || '';
+          const amount = sale.total || sale.amount || sale.totalAmount || 0;
+          const payment = sale.paymentMethod || '-';
+          const status = sale.paymentStatus || '-';
+          total += Number(amount) || 0;
+          html += `<tr><td class='py-1 px-2'>${date}</td><td class='py-1 px-2'>${type}</td><td class='py-1 px-2'>${customer}</td><td class='py-1 px-2'>₱${amount}</td><td class='py-1 px-2'>${payment}</td><td class='py-1 px-2'>${status}</td></tr>`;
+        });
+        html += `</tbody></table><div class='mt-4 font-bold text-blue-700'>Total Sales: ₱${total.toLocaleString()}</div>`;
+        document.getElementById('reportSalesContent').innerHTML = html;
+      } catch (e) {
+        document.getElementById('reportSalesContent').innerHTML = `<div class='text-red-600 font-bold'>Error loading sales report.<br>${e.message}</div>`;
+        console.error('Sales Report Error:', e);
+      }
+    }
+    function downloadSalesReportCSV() {
+      const { start, end, year, month } = getPreviousMonthRange();
+      const laundrySales = JSON.parse(localStorage.getItem('laundrySales') || '[]');
+      const waterSales = JSON.parse(localStorage.getItem('waterSales') || '[]');
+      const allSales = [...laundrySales, ...waterSales].filter(sale => {
+        const date = new Date(sale.date || sale.timestamp || sale.createdAt || sale.time || 0);
+        return date >= start && date <= end;
+      });
+      if (!allSales.length) {
+        showCustomAlert('No sales records for this month.', 'Info', 'info');
+        return;
+      }
+      let csv = 'Date,Type,Customer,Amount,Payment Method,Payment Status\n';
+      allSales.forEach(sale => {
+        const type = sale.items ? 'Laundry' : 'Water';
+        const date = formatDateTime(sale.date || sale.timestamp || sale.createdAt || sale.time || '');
+        const customer = sale.customer || sale.customerName || '';
+        const amount = sale.total || sale.amount || sale.totalAmount || 0;
+        const payment = sale.paymentMethod || '-';
+        const status = sale.paymentStatus || '-';
+        csv += `"${date}","${type}","${customer}","${amount}","${payment}","${status}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sales-report-${year}-${String(month).padStart(2,'0')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    // --- Inventory Report Logic ---
+    function renderInventoryReport() {
+      try {
+        const { start, end, year, month } = getPreviousMonthRange();
+        const laundryUsage = JSON.parse(localStorage.getItem('mainAdmin_laundryUsageLog') || '[]');
+        const waterUsage = JSON.parse(localStorage.getItem('mainAdmin_waterUsageLog') || '[]');
+        const allUsage = [...laundryUsage.map(u => ({...u, type:'Laundry'})), ...waterUsage.map(u => ({...u, type:'Water'}))].filter(log => {
+          const date = new Date(log.date || log.timestamp || log.createdAt || log.time || 0);
+          return date >= start && date <= end;
+        });
+        const laundryInv = JSON.parse(localStorage.getItem('mainAdmin_laundryInventory') || '[]');
+        const waterInv = JSON.parse(localStorage.getItem('mainAdmin_waterInventory') || '[]');
+        let html = `<div class='mb-2 font-semibold'>Report for ${year}-${String(month).padStart(2,'0')}</div>`;
+        if (!allUsage.length) {
+          html += `<div class='text-gray-500'>No inventory usage records for this month.</div>`;
+        } else {
+          html += `<table class='min-w-full text-left border-collapse text-sm'><thead><tr class='bg-cyan-100 text-cyan-700'><th class='py-2 px-2'>Date</th><th class='py-2 px-2'>Type</th><th class='py-2 px-2'>Item</th><th class='py-2 px-2'>Qty Used</th><th class='py-2 px-2'>Customer</th><th class='py-2 px-2'>Sale ID</th></tr></thead><tbody>`;
+          allUsage.forEach(log => {
+            const date = formatDateTime(log.date || log.timestamp || log.createdAt || log.time || '');
+            html += `<tr><td class='py-1 px-2'>${date}</td><td class='py-1 px-2'>${log.type}</td><td class='py-1 px-2'>${log.itemName || ''}</td><td class='py-1 px-2'>${log.quantity || ''}</td><td class='py-1 px-2'>${log.customer || ''}</td><td class='py-1 px-2'>${log.saleId || ''}</td></tr>`;
+          });
+          html += `</tbody></table>`;
+        }
+        html += `<div class='mt-6 font-bold text-cyan-700'>Current Inventory (as of end of month):</div>`;
+        html += `<div class='grid grid-cols-1 md:grid-cols-2 gap-4 mt-2'>`;
+        html += `<div><div class='font-semibold text-cyan-600 mb-1'>Laundry Inventory</div><ul class='list-disc ml-6'>`;
+        laundryInv.forEach(item => {
+          html += `<li>${item.name}: <span class='font-bold'>${item.quantity}</span></li>`;
+        });
+        html += `</ul></div>`;
+        html += `<div><div class='font-semibold text-blue-600 mb-1'>Water Inventory</div><ul class='list-disc ml-6'>`;
+        waterInv.forEach(item => {
+          html += `<li>${item.name}: <span class='font-bold'>${item.quantity}</span></li>`;
+        });
+        html += `</ul></div></div>`;
+        document.getElementById('reportInventoryContent').innerHTML = html;
+      } catch (e) {
+        document.getElementById('reportInventoryContent').innerHTML = `<div class='text-red-600 font-bold'>Error loading inventory report.<br>${e.message}</div>`;
+        console.error('Inventory Report Error:', e);
+      }
+    }
+    function downloadInventoryReportCSV() {
+      const { start, end, year, month } = getPreviousMonthRange();
+      const laundryUsage = JSON.parse(localStorage.getItem('mainAdmin_laundryUsageLog') || '[]');
+      const waterUsage = JSON.parse(localStorage.getItem('mainAdmin_waterUsageLog') || '[]');
+      const allUsage = [...laundryUsage.map(u => ({...u, type:'Laundry'})), ...waterUsage.map(u => ({...u, type:'Water'}))].filter(log => {
+        const date = new Date(log.date || log.timestamp || log.createdAt || log.time || 0);
+        return date >= start && date <= end;
+      });
+      const laundryInv = JSON.parse(localStorage.getItem('mainAdmin_laundryInventory') || '[]');
+      const waterInv = JSON.parse(localStorage.getItem('mainAdmin_waterInventory') || '[]');
+      let csv = `Type,Date,Item,Qty Used,Customer,Sale ID\n`;
+      allUsage.forEach(log => {
+        const date = formatDateTime(log.date || log.timestamp || log.createdAt || log.time || '');
+        csv += `"${log.type}","${date}","${log.itemName || ''}","${log.quantity || ''}","${log.customer || ''}","${log.saleId || ''}"\n`;
+      });
+      csv += `\nLaundry Inventory as of end of month:\nItem,Quantity\n`;
+      laundryInv.forEach(item => {
+        csv += `"${item.name}","${item.quantity}"\n`;
+      });
+      csv += `\nWater Inventory as of end of month:\nItem,Quantity\n`;
+      waterInv.forEach(item => {
+        csv += `"${item.name}","${item.quantity}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `inventory-report-${year}-${String(month).padStart(2,'0')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    // Reset Modal Logic
+    function openResetModal() {
+      document.getElementById('resetModal').classList.remove('hidden');
+    }
+    function closeResetModal() {
+      document.getElementById('resetModal').classList.add('hidden');
+      document.getElementById('resetForm').reset();
+      document.getElementById('resetError').classList.add('hidden');
+      document.getElementById('resetSuccess').classList.add('hidden');
+    }
+    document.getElementById('resetForm').onsubmit = function(e) {
+      e.preventDefault();
+      const username = document.getElementById('resetUsername').value.trim();
+      const password = document.getElementById('resetPassword').value;
+      const mainAdmin = getAdminAccounts().find(acc => acc.user && acc.user.trim().toLowerCase() === 'admin');
+
+      if (!username || !password) {
+        document.getElementById('resetError').textContent = 'Username and password are required.';
+        document.getElementById('resetError').classList.remove('hidden');
+        return;
+      }
+
+      if (username.toLowerCase() !== mainAdmin.user.trim().toLowerCase() || password !== mainAdmin.pass) {
+        document.getElementById('resetError').textContent = 'Incorrect username or password.';
+        document.getElementById('resetError').classList.remove('hidden');
+        return;
+      }
+
+      if (!showCustomConfirm('Are you sure you want to reset all sales and inventory data? This action cannot be undone.', 'Confirm Reset', 'warning', 'Yes', 'Cancel')) {
+        return;
+      }
+
+      localStorage.removeItem('laundrySales');
+      localStorage.removeItem('waterSales');
+      localStorage.removeItem('mainAdmin_laundryUsageLog');
+      localStorage.removeItem('mainAdmin_waterUsageLog');
+      localStorage.removeItem('mainAdmin_laundryInventory');
+      localStorage.removeItem('mainAdmin_waterInventory');
+
+      document.getElementById('resetSuccess').textContent = 'All data has been reset successfully!';
+      document.getElementById('resetSuccess').classList.remove('hidden');
+      renderAdminAccounts(); // Re-render admin accounts to reflect main admin status
+      closeResetModal();
+      // Show success popup
+      document.getElementById('resetSuccessPopup').classList.remove('hidden');
+    };
+    function closeResetSuccessPopup() {
+      document.getElementById('resetSuccessPopup').classList.add('hidden');
+    }
+    // Custom Modal System
+    function showCustomAlert(message, title = 'Notice', icon = 'info', okText = 'OK') {
+      return new Promise(resolve => {
+        const backdrop = document.getElementById('customModalBackdrop');
+        const modal = document.getElementById('customModal');
+        document.getElementById('customModalTitle').textContent = title;
+        document.getElementById('customModalMessage').textContent = message;
+        document.getElementById('customModalInput').classList.add('hidden');
+        document.getElementById('customModalInput').value = '';
+        document.getElementById('customModalCancel').classList.add('hidden');
+        const okBtn = document.getElementById('customModalOk');
+        okBtn.textContent = okText;
+        okBtn.className = 'bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow transition';
+        // Icon
+        const iconDiv = document.getElementById('customModalIcon');
+        iconDiv.innerHTML = icon === 'success' ? "<i class='fas fa-check-circle text-green-500 text-4xl'></i>" : icon === 'error' ? "<i class='fas fa-times-circle text-red-500 text-4xl'></i>" : icon === 'warning' ? "<i class='fas fa-exclamation-triangle text-yellow-500 text-4xl'></i>" : "<i class='fas fa-info-circle text-blue-500 text-4xl'></i>";
+        backdrop.classList.remove('hidden');
+        okBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          resolve();
+        };
+      });
+    }
+    function showCustomConfirm(message, title = 'Are you sure?', icon = 'warning', okText = 'Yes', cancelText = 'Cancel') {
+      return new Promise(resolve => {
+        const backdrop = document.getElementById('customModalBackdrop');
+        const modal = document.getElementById('customModal');
+        document.getElementById('customModalTitle').textContent = title;
+        document.getElementById('customModalMessage').textContent = message;
+        document.getElementById('customModalInput').classList.add('hidden');
+        document.getElementById('customModalInput').value = '';
+        const okBtn = document.getElementById('customModalOk');
+        okBtn.textContent = okText;
+        okBtn.className = 'bg-red-500 hover:bg-red-700 text-white px-6 py-2 rounded-full font-bold shadow transition';
+        const cancelBtn = document.getElementById('customModalCancel');
+        cancelBtn.textContent = cancelText;
+        cancelBtn.classList.remove('hidden');
+        // Icon
+        const iconDiv = document.getElementById('customModalIcon');
+        iconDiv.innerHTML = icon === 'error' ? "<i class='fas fa-times-circle text-red-500 text-4xl'></i>" : icon === 'success' ? "<i class='fas fa-check-circle text-green-500 text-4xl'></i>" : icon === 'warning' ? "<i class='fas fa-exclamation-triangle text-yellow-500 text-4xl'></i>" : "<i class='fas fa-question-circle text-blue-500 text-4xl'></i>";
+        backdrop.classList.remove('hidden');
+        okBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          cancelBtn.classList.add('hidden');
+          resolve(true);
+        };
+        cancelBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          cancelBtn.classList.add('hidden');
+          resolve(false);
+        };
+      });
+    }
+    function showCustomPrompt(message, title = 'Input Required', icon = 'info', okText = 'OK', cancelText = 'Cancel', defaultValue = '') {
+      return new Promise(resolve => {
+        const backdrop = document.getElementById('customModalBackdrop');
+        const modal = document.getElementById('customModal');
+        document.getElementById('customModalTitle').textContent = title;
+        document.getElementById('customModalMessage').textContent = message;
+        const input = document.getElementById('customModalInput');
+        input.classList.remove('hidden');
+        input.value = defaultValue;
+        const okBtn = document.getElementById('customModalOk');
+        okBtn.textContent = okText;
+        okBtn.className = 'bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow transition';
+        const cancelBtn = document.getElementById('customModalCancel');
+        cancelBtn.textContent = cancelText;
+        cancelBtn.classList.remove('hidden');
+        // Icon
+        const iconDiv = document.getElementById('customModalIcon');
+        iconDiv.innerHTML = icon === 'error' ? "<i class='fas fa-times-circle text-red-500 text-4xl'></i>" : icon === 'success' ? "<i class='fas fa-check-circle text-green-500 text-4xl'></i>" : icon === 'warning' ? "<i class='fas fa-exclamation-triangle text-yellow-500 text-4xl'></i>" : "<i class='fas fa-info-circle text-blue-500 text-4xl'></i>";
+        backdrop.classList.remove('hidden');
+        okBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          cancelBtn.classList.add('hidden');
+          resolve(input.value);
+        };
+        cancelBtn.onclick = () => {
+          backdrop.classList.add('hidden');
+          cancelBtn.classList.add('hidden');
+          resolve(null);
+        };
+      });
+    }
+    function getCurrentAdminKey(suffix) {
+      const user = (localStorage.getItem('adminUser') || '').trim().toLowerCase();
+      if (user === 'admin') {
+        return `mainAdmin_${suffix}`;
+      } else if (user) {
+        return `admin_${user}_${suffix}`;
+      } else {
+        return suffix; // fallback
+      }
+    }
+    function getEmployees() {
+      return JSON.parse(localStorage.getItem(getCurrentAdminKey('employees')) || '[]');
+    }
+    function getSalaryData() {
+      return JSON.parse(localStorage.getItem(getCurrentAdminKey('employeeSalaries')) || '{}');
+    }
+    function getAttendanceData() {
+      return JSON.parse(localStorage.getItem(getCurrentAdminKey('attendanceData')) || '{}');
+    }
+    function renderSalaryReport() {
+      const employees = getEmployees();
+      const salaryData = getSalaryData();
+      const attendance = getAttendanceData();
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const todayStr = now.toLocaleString('default', { month: 'long', day: '2-digit', year: 'numeric' });
+      const todayISO = now.toISOString().slice(0, 10); // YYYY-MM-DD
+      const container = document.getElementById('salaryReportContent');
+      if (!employees.length) {
+        container.innerHTML = `<div class='text-center text-xl text-red-600 font-bold py-12'>No employees found.</div>`;
+        return;
+      }
+      let html = `<div class='mb-2 font-semibold text-center text-lg text-green-700'>Salary Report for ${monthYear}</div>`;
+      html += `<div class='mb-4 text-center text-gray-600 text-sm'>Date Generated: <span class='font-bold'>${todayStr}</span></div>`;
+      html += `<table class='min-w-full text-left border-collapse text-sm'><thead><tr class='bg-green-100 text-green-700'><th class='py-2 px-2'>Employee</th><th class='py-2 px-2'>Hourly Rate</th><th class='py-2 px-2'>Total Hours</th><th class='py-2 px-2'>Total Salary</th><th class='py-2 px-2'>Hours Today</th><th class='py-2 px-2'>Salary Today</th></tr></thead><tbody>`;
+      employees.forEach(emp => {
+        let totalMs = 0;
+        let todayMs = 0;
+        if (attendance[emp.name]) {
+          Object.keys(attendance[emp.name]).forEach(date => {
+            const d = new Date(date);
+            if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+              const record = attendance[emp.name][date];
+              if (record.timeIn && record.timeOut) {
+                totalMs += new Date(record.timeOut) - new Date(record.timeIn);
+                if (date === todayISO) {
+                  todayMs += new Date(record.timeOut) - new Date(record.timeIn);
+                }
+              }
+            }
+          });
+        }
+        const totalHours = totalMs / (1000 * 60 * 60);
+        const perHour = salaryData[emp.name] || 0;
+        const totalSalary = (perHour * totalHours).toFixed(2);
+        const hoursToday = todayMs / (1000 * 60 * 60);
+        const salaryToday = (perHour * hoursToday).toFixed(2);
+        html += `<tr><td class='py-1 px-2 font-semibold'>${emp.name}</td><td class='py-1 px-2'>₱${perHour}</td><td class='py-1 px-2'>${totalHours.toFixed(2)}</td><td class='py-1 px-2 text-green-700 font-bold'>₱${totalSalary}</td><td class='py-1 px-2'>${hoursToday.toFixed(2)}</td><td class='py-1 px-2 text-green-700 font-bold'>₱${salaryToday}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+    function downloadSalaryReportCSV() {
+      const employees = getEmployees();
+      const salaryData = getSalaryData();
+      const attendance = getAttendanceData();
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const todayStr = now.toLocaleString('default', { month: 'long', day: '2-digit', year: 'numeric' });
+      const todayISO = now.toISOString().slice(0, 10); // YYYY-MM-DD
+      let csv = `Salary Report for ${monthYear}\nDate Generated: ${todayStr}\n`;
+      csv += `Employee,Hourly Rate,Total Hours,Total Salary,Hours Today,Salary Today\n`;
+      employees.forEach(emp => {
+        let totalMs = 0;
+        let todayMs = 0;
+        if (attendance[emp.name]) {
+          Object.keys(attendance[emp.name]).forEach(date => {
+            const d = new Date(date);
+            if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+              const record = attendance[emp.name][date];
+              if (record.timeIn && record.timeOut) {
+                totalMs += new Date(record.timeOut) - new Date(record.timeIn);
+                if (date === todayISO) {
+                  todayMs += new Date(record.timeOut) - new Date(record.timeIn);
+                }
+              }
+            }
+          });
+        }
+        const totalHours = totalMs / (1000 * 60 * 60);
+        const perHour = salaryData[emp.name] || 0;
+        const totalSalary = (perHour * totalHours).toFixed(2);
+        const hoursToday = todayMs / (1000 * 60 * 60);
+        const salaryToday = (perHour * hoursToday).toFixed(2);
+        csv += `"${emp.name}","${perHour}","${totalHours.toFixed(2)}","${totalSalary}","${hoursToday.toFixed(2)}","${salaryToday}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `salary-report-${monthYear.replace(/\s/g,'-')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    function renderAttendanceReport() {
+      const employees = getEmployees();
+      const attendance = getAttendanceData();
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const todayStr = now.toLocaleString('default', { month: 'long', day: '2-digit', year: 'numeric' });
+      const todayISO = now.toISOString().slice(0, 10); // YYYY-MM-DD
+      const container = document.getElementById('attendanceReportContent');
+      if (!employees.length) {
+        container.innerHTML = `<div class='text-center text-xl text-red-600 font-bold py-12'>No employees found.</div>`;
+        return;
+      }
+      let html = `<div class='mb-2 font-semibold text-center text-lg text-purple-700'>Attendance Report for ${monthYear}</div>`;
+      html += `<div class='mb-4 text-center text-gray-600 text-sm'>Date Generated: <span class='font-bold'>${todayStr}</span></div>`;
+      html += `<table class='min-w-full text-left border-collapse text-sm'><thead><tr class='bg-purple-100 text-purple-700'><th class='py-2 px-2'>Employee</th><th class='py-2 px-2'>Date</th><th class='py-2 px-2'>Time In</th><th class='py-2 px-2'>Time Out</th><th class='py-2 px-2'>Total Hours</th></tr></thead><tbody>`;
+      employees.forEach(emp => {
+        if (attendance[emp.name]) {
+          Object.keys(attendance[emp.name]).forEach(date => {
+            const record = attendance[emp.name][date];
+            if (record.timeIn && record.timeOut) {
+              const timeIn = formatDateTime(record.timeIn);
+              const timeOut = formatDateTime(record.timeOut);
+              const totalMs = new Date(record.timeOut) - new Date(record.timeIn);
+              const totalHours = totalMs / (1000 * 60 * 60);
+              html += `<tr><td class='py-1 px-2 font-semibold'>${emp.name}</td><td class='py-1 px-2'>${date}</td><td class='py-1 px-2'>${timeIn}</td><td class='py-1 px-2'>${timeOut}</td><td class='py-1 px-2 text-purple-700 font-bold'>${totalHours.toFixed(2)}</td></tr>`;
+            }
+          });
+        }
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+    function downloadAttendanceReportCSV() {
+      const employees = getEmployees();
+      const attendance = getAttendanceData();
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const todayStr = now.toLocaleString('default', { month: 'long', day: '2-digit', year: 'numeric' });
+      const todayISO = now.toISOString().slice(0, 10); // YYYY-MM-DD
+      let csv = `Attendance Report for ${monthYear}\nDate Generated: ${todayStr}\n`;
+      csv += `Employee,Date,Time In,Time Out,Total Hours\n`;
+      employees.forEach(emp => {
+        if (attendance[emp.name]) {
+          Object.keys(attendance[emp.name]).forEach(date => {
+            const record = attendance[emp.name][date];
+            if (record.timeIn && record.timeOut) {
+              const timeIn = formatDateTime(record.timeIn);
+              const timeOut = formatDateTime(record.timeOut);
+              const totalMs = new Date(record.timeOut) - new Date(record.timeIn);
+              const totalHours = totalMs / (1000 * 60 * 60);
+              csv += `"${emp.name}","${date}","${timeIn}","${timeOut}","${totalHours.toFixed(2)}"\n`;
+            }
+          });
+        }
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `attendance-report-${monthYear.replace(/\s/g,'-')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    function renderEmployeeManagementReport() {
+      const employees = getEmployees();
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const todayStr = now.toLocaleString('default', { month: 'long', day: '2-digit', year: 'numeric' });
+      const container = document.getElementById('employeeManagementReportContent');
+
+      if (!employees.length) {
+        container.innerHTML = `<div class='text-center text-xl text-red-600 font-bold py-12'>No employee data found.</div>`;
+        return;
+      }
+
+      let html = `<div class='mb-2 font-semibold text-center text-lg text-indigo-700'>Employee Management Report for ${monthYear}</div>`;
+      html += `<div class='mb-4 text-center text-gray-600 text-sm'>Date Generated: <span class='font-bold'>${todayStr}</span></div>`;
+      html += `<table class='min-w-full text-left border-collapse text-sm'><thead><tr class='bg-indigo-100 text-indigo-700'><th class='py-2 px-2'>Employee</th><th class='py-2 px-2'>Start Date</th><th class='py-2 px-2'>Tenure (Months)</th></tr></thead><tbody>`;
+
+      employees.forEach(emp => {
+        const startDate = new Date(emp.startDate);
+        const tenureMonths = (currentYear - startDate.getFullYear()) * 12 + (currentMonth - startDate.getMonth());
+        html += `<tr><td class='py-1 px-2 font-semibold'>${emp.name}</td><td class='py-1 px-2'>${startDate.toLocaleDateString()}</td><td class='py-1 px-2 text-indigo-700 font-bold'>${tenureMonths}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+    function downloadEmployeeManagementReportCSV() {
+      const employees = getEmployees();
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const todayStr = now.toLocaleString('default', { month: 'long', day: '2-digit', year: 'numeric' });
+      let csv = `Employee Management Report for ${monthYear}\nDate Generated: ${todayStr}\n`;
+      csv += `Employee,Start Date,Tenure (Months)\n`;
+      employees.forEach(emp => {
+        const startDate = new Date(emp.startDate);
+        const tenureMonths = (currentYear - startDate.getFullYear()) * 12 + (currentMonth - startDate.getMonth());
+        csv += `"${emp.name}","${startDate.toLocaleDateString()}","${tenureMonths}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `employee-management-report-${monthYear.replace(/\s/g,'-')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+  </script>
+</body>
+</html>
+<!-- End of System Settings Page --> 

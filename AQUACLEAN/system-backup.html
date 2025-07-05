@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Backup & Restore | AquaClean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-200 via-cyan-100 to-blue-400 min-h-screen font-sans relative overflow-x-hidden">
+  <!-- Back Arrow -->
+  <a href="system-settings.html" class="fixed top-6 left-6 flex items-center gap-3 z-50 px-5 py-3 rounded-2xl bg-white/30 dark:bg-gray-900/40 shadow-lg border border-cyan-200/40 dark:border-cyan-800/40 backdrop-blur-xl text-blue-900 dark:text-cyan-200 font-bold text-xl hover:bg-cyan-100/60 hover:dark:bg-cyan-900/60 hover:text-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition-all duration-300 group" aria-label="Back to System Settings">
+    <i class="fas fa-arrow-left text-3xl group-hover:-translate-x-1 transition-transform duration-300"></i>
+    <span class="hidden sm:inline">Back to System Settings</span>
+  </a>
+  <!-- Header -->
+  <header class="text-center py-10">
+    <h1 class="text-4xl font-bold text-cyan-700 mb-2 drop-shadow">Backup & Restore</h1>
+    <p class="text-lg text-cyan-500 mb-6">Export or import your system data</p>
+  </header>
+  <!-- Backup & Restore Section -->
+  <section class="max-w-2xl mx-auto mb-16 bg-white/90 backdrop-blur-xl border border-cyan-100 rounded-2xl shadow-xl p-8 text-center">
+    <h2 class="text-2xl font-bold text-cyan-700 mb-4">Backup & Restore Data</h2>
+    <div class="mb-8">
+      <h3 class="text-xl font-bold text-blue-700 mb-2">Download Backup</h3>
+      <p class="text-gray-600 mb-4">Download a backup of all your system data. Keep this file safe!</p>
+      <button onclick="downloadBackup()" class="bg-gradient-to-r from-cyan-600 to-blue-500 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:from-cyan-700 hover:to-blue-600 hover:scale-105 transition text-lg flex items-center gap-2 mx-auto">
+        <i class="fas fa-download"></i> Download Backup
+      </button>
+    </div>
+    <div>
+      <h3 class="text-xl font-bold text-blue-700 mb-2">Restore Backup</h3>
+      <p class="text-gray-600 mb-4">Restore your system from a backup file. This will overwrite all current data. <b>Use with caution!</b></p>
+      <input type="file" id="restoreFile" accept="application/json" class="mb-4 block mx-auto" />
+      <button onclick="restoreBackup()" class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:from-blue-700 hover:to-cyan-600 hover:scale-105 transition text-lg flex items-center gap-2 mx-auto">
+        <i class="fas fa-upload"></i> Restore Backup
+      </button>
+      <div id="restoreMsg" class="mt-4 text-lg font-bold"></div>
+    </div>
+  </section>
+  <!-- Footer -->
+  <footer class="relative z-10 bg-blue-700 text-white text-center py-4 mt-12 rounded-t-3xl shadow-lg">
+    &copy; <span id="year"></span> AquaClean Laundry & Water Refilling Station. All rights reserved.
+  </footer>
+  <script>
+    // Auto-update Footer Year
+    window.addEventListener('DOMContentLoaded', function() {
+      const yearSpan = document.getElementById('year');
+      if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+    });
+    // Backup logic
+    function downloadBackup() {
+      const keys = [
+        'adminAccounts',
+        'laundrySales',
+        'waterSales',
+        'mainAdmin_laundryUsageLog',
+        'mainAdmin_waterUsageLog',
+        'mainAdmin_laundryInventory',
+        'mainAdmin_waterInventory'
+      ];
+      const backup = {};
+      keys.forEach(key => {
+        backup[key] = localStorage.getItem(key);
+      });
+      const now = new Date();
+      const year = now.getFullYear();
+      const monthNum = String(now.getMonth() + 1).padStart(2, '0');
+      const monthName = now.toLocaleString('default', { month: 'long' });
+      const day = String(now.getDate()).padStart(2, '0');
+      const filename = `aquaclean-backup-${year}-${monthNum}-${monthName}-${day}.json`;
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    // Restore logic
+    function restoreBackup() {
+      const fileInput = document.getElementById('restoreFile');
+      const msg = document.getElementById('restoreMsg');
+      msg.textContent = '';
+      if (!fileInput.files.length) {
+        msg.textContent = 'Please select a backup file.';
+        msg.className = 'mt-4 text-lg font-bold text-red-600';
+        return;
+      }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data || typeof data !== 'object') throw new Error('Invalid backup file.');
+          // Confirm overwrite
+          if (!confirm('Restoring will overwrite all current data. Are you sure?')) return;
+          Object.keys(data).forEach(key => {
+            if (data[key] !== undefined && data[key] !== null) {
+              localStorage.setItem(key, data[key]);
+            }
+          });
+          msg.textContent = 'Restore successful! Please reload the page.';
+          msg.className = 'mt-4 text-lg font-bold text-green-600';
+        } catch (err) {
+          msg.textContent = 'Restore failed: ' + err.message;
+          msg.className = 'mt-4 text-lg font-bold text-red-600';
+        }
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html> 

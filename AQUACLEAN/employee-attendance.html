@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Attendance | AquaClean</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .glassmorphism {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.75);
+        }
+        .dark .glassmorphism {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-cyan-800 to-blue-700 dark:from-gray-900 dark:via-gray-800 dark:to-black min-h-screen relative overflow-x-hidden">
+    <!-- Decorative Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl animate-float" style="animation-delay: -3s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse-slow"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-20 text-center py-8">
+        <a href="admin-panel.html" class="fixed top-6 left-6 flex items-center gap-3 z-50 px-5 py-3 rounded-2xl bg-white/30 dark:bg-gray-900/40 shadow-lg border border-cyan-200/40 dark:border-cyan-800/40 backdrop-blur-xl text-blue-900 dark:text-cyan-200 font-bold text-xl hover:bg-cyan-100/60 hover:dark:bg-cyan-900/60 hover:text-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition-all duration-300 group" aria-label="Back to Admin Panel">
+            <i class="fas fa-arrow-left text-3xl group-hover:-translate-x-1 transition-transform duration-300"></i>
+            <span class="hidden sm:inline">Back to Admin Panel</span>
+        </a>
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">
+                <i class="fas fa-calendar-check text-cyan-400 mr-4"></i>Employee Attendance
+            </h1>
+            <p class="text-xl text-cyan-100 dark:text-cyan-200 mb-8">Track employee time and attendance records</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-6xl mx-auto px-4 pb-12">
+        <!-- Enhanced Stats Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-green-100/80 to-emerald-100/80 dark:from-green-900/50 dark:to-emerald-900/50 backdrop-blur-xl border border-green-200/50 dark:border-green-700/50 rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-600 dark:text-green-300 font-semibold text-sm uppercase tracking-wide">Present Today</p>
+                        <p class="text-2xl font-bold text-green-800 dark:text-green-200" id="presentToday">0</p>
+                    </div>
+                    <div class="bg-green-500/20 p-3 rounded-full">
+                        <i class="fas fa-user-check text-2xl text-green-600 dark:text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-blue-100/80 to-cyan-100/80 dark:from-blue-900/50 dark:to-cyan-900/50 backdrop-blur-xl border border-blue-200/50 dark:border-blue-700/50 rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-600 dark:text-blue-300 font-semibold text-sm uppercase tracking-wide">Total Records</p>
+                        <p class="text-2xl font-bold text-blue-800 dark:text-blue-200" id="totalRecords">0</p>
+                    </div>
+                    <div class="bg-blue-500/20 p-3 rounded-full">
+                        <i class="fas fa-list text-2xl text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-purple-100/80 to-pink-100/80 dark:from-purple-900/50 dark:to-pink-900/50 backdrop-blur-xl border border-purple-200/50 dark:border-purple-700/50 rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-600 dark:text-purple-300 font-semibold text-sm uppercase tracking-wide">Active Employees</p>
+                        <p class="text-2xl font-bold text-purple-800 dark:text-purple-200" id="activeEmployees">0</p>
+                    </div>
+                    <div class="bg-purple-500/20 p-3 rounded-full">
+                        <i class="fas fa-users text-2xl text-purple-600 dark:text-purple-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-orange-100/80 to-red-100/80 dark:from-orange-900/50 dark:to-red-900/50 backdrop-blur-xl border border-orange-200/50 dark:border-orange-700/50 rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-600 dark:text-orange-300 font-semibold text-sm uppercase tracking-wide">Today's Date</p>
+                        <p class="text-lg font-bold text-orange-800 dark:text-orange-200" id="todayDate">-</p>
+                    </div>
+                    <div class="bg-orange-500/20 p-3 rounded-full">
+                        <i class="fas fa-calendar-day text-2xl text-orange-600 dark:text-orange-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="bg-white/80 dark:bg-black backdrop-blur-2xl border border-blue-100 dark:border-gray-700 rounded-3xl shadow-2xl p-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-blue-700 dark:text-cyan-300 mb-2">
+                    <i class="fas fa-clock text-cyan-500 dark:text-cyan-400 mr-3"></i>Time Tracking
+                </h2>
+                <p class="text-lg text-gray-700 dark:text-gray-300">Record employee time entries and breaks</p>
+            </div>
+
+            <!-- Enhanced Time Entry Form -->
+            <div class="bg-gradient-to-r from-blue-100/50 to-cyan-100/50 dark:from-gray-800/50 dark:to-gray-700/50 rounded-2xl p-8 border border-blue-200/50 dark:border-gray-600/50 shadow-xl backdrop-blur-sm mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Employee Select -->
+                    <div>
+                        <label class="block text-lg font-bold text-blue-700 dark:text-cyan-300 mb-3">
+                            <i class="fas fa-user text-cyan-500 dark:text-cyan-400 mr-2"></i>Select Employee
+                        </label>
+                        <select 
+                            id="employeeName" 
+                            class="w-full p-4 border-2 border-blue-200 dark:border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-4 focus:ring-cyan-200 dark:focus:ring-cyan-800 transition-all duration-300 bg-white/90 dark:bg-gray-800/90 text-lg font-medium shadow-md backdrop-blur-sm cursor-pointer"
+                            required
+                        >
+                            <option value="">Choose an employee...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Time Buttons -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <button type="button" onclick="timeIn()" class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-6 py-4 rounded-xl font-bold shadow-lg hover:from-green-700 hover:to-emerald-600 transition transform hover:scale-105 ring-2 ring-green-300">
+                            <i class="fas fa-sign-in-alt text-xl mr-2"></i>Time In
+                        </button>
+                        <button type="button" onclick="timeOut()" class="bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-4 rounded-xl font-bold shadow-lg hover:from-red-700 hover:to-red-600 transition transform hover:scale-105 ring-2 ring-red-300">
+                            <i class="fas fa-sign-out-alt text-xl mr-2"></i>Time Out
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Break Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                    <button type="button" onclick="lunchIn()" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-3 rounded-xl font-bold shadow-lg hover:from-yellow-600 hover:to-orange-600 transition transform hover:scale-105 ring-2 ring-yellow-300">
+                        <i class="fas fa-utensils mr-2"></i>Lunch In
+                    </button>
+                    <button type="button" onclick="lunchOut()" class="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-4 py-3 rounded-xl font-bold shadow-lg hover:from-orange-600 hover:to-yellow-600 transition transform hover:scale-105 ring-2 ring-orange-300">
+                        <i class="fas fa-utensils mr-2"></i>Lunch Out
+                    </button>
+                    <button type="button" onclick="snackIn()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-3 rounded-xl font-bold shadow-lg hover:from-purple-600 hover:to-pink-600 transition transform hover:scale-105 ring-2 ring-purple-300">
+                        <i class="fas fa-coffee mr-2"></i>Snack In
+                    </button>
+                    <button type="button" onclick="snackOut()" class="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-3 rounded-xl font-bold shadow-lg hover:from-pink-600 hover:to-purple-600 transition transform hover:scale-105 ring-2 ring-pink-300">
+                        <i class="fas fa-coffee mr-2"></i>Snack Out
+                    </button>
+                </div>
+            </div>
+
+            <!-- Enhanced Attendance Log -->
+            <div class="bg-gradient-to-br from-blue-100/50 to-cyan-100/50 dark:from-gray-800/50 dark:to-gray-700/50 rounded-2xl p-8 border border-blue-200/50 dark:border-gray-600/50 shadow-xl backdrop-blur-sm">
+                <h3 class="text-2xl font-bold text-blue-700 dark:text-cyan-300 mb-4 text-center">
+                    <i class="fas fa-history text-cyan-500 dark:text-cyan-400 mr-3"></i>Attendance Records
+                </h3>
+                <div id="attendanceLog" class="bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-md backdrop-blur-sm max-h-96 overflow-y-auto border border-blue-200/50 dark:border-gray-600/50">
+            <!-- Attendance records will appear here -->
+        </div>
+                
+                <!-- Enhanced Empty State -->
+                <div id="emptyState" class="hidden text-center py-12">
+                    <div class="bg-gradient-to-br from-purple-100/50 to-pink-100/50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl p-8 border-2 border-dashed border-purple-300 dark:border-purple-600">
+                        <i class="fas fa-calendar-check text-6xl text-purple-400 dark:text-purple-500 mb-4"></i>
+                        <h3 class="text-xl font-bold text-purple-700 dark:text-purple-300 mb-2">No Attendance Records</h3>
+                        <p class="text-purple-600 dark:text-purple-400">Start tracking employee time by entering a name above!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 bg-blue-700 dark:bg-black text-white text-center py-4 mt-12 rounded-t-3xl shadow-lg">
+        &copy; <span id="year"></span> AquaClean Laundry & Water Refilling Station. All rights reserved.
+    </footer>
+
+    <script>
+let attendanceData = {};
+
+    function getCurrentAdminKey(suffix) {
+      const user = (localStorage.getItem('adminUser') || '').trim().toLowerCase();
+      if (user === 'admin') {
+        return `mainAdmin_${suffix}`;
+      } else if (user) {
+        return `admin_${user}_${suffix}`;
+      } else {
+        return suffix; // fallback
+      }
+    }
+
+    function getEmployees() {
+        return JSON.parse(localStorage.getItem(getCurrentAdminKey('employees')) || '[]');
+    }
+
+    function getAttendanceData() {
+        return JSON.parse(localStorage.getItem(getCurrentAdminKey('attendanceData')) || '{}');
+    }
+
+    function setAttendanceData(data) {
+        localStorage.setItem(getCurrentAdminKey('attendanceData'), JSON.stringify(data));
+    }
+
+    function populateEmployeeSelect() {
+        const employees = getEmployees();
+        const select = document.getElementById('employeeName');
+        const currentSelection = select.value; // Remember current selection
+        
+        // Clear existing options except the first one
+        select.innerHTML = '<option value="">Choose an employee...</option>';
+        
+        if (employees.length === 0) {
+            select.innerHTML += '<option value="" disabled>No employees available</option>';
+            return;
+        }
+        
+        employees.forEach(employee => {
+            const option = document.createElement('option');
+            option.value = employee.name;
+            option.textContent = employee.name;
+            select.appendChild(option);
+        });
+        
+        // Restore the previous selection if it still exists
+        if (currentSelection && employees.some(emp => emp.name === currentSelection)) {
+            select.value = currentSelection;
+        }
+    }
+
+function getCurrentDateTime() {
+    const now = new Date();
+    return now.toLocaleString();
+}
+
+function getCurrentDate() {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+}
+
+    function updateStats() {
+        const today = getCurrentDate();
+        let presentToday = 0;
+        let totalRecords = 0;
+        let activeEmployees = new Set();
+        
+        Object.keys(attendanceData).forEach(name => {
+            if (attendanceData[name][today]) {
+                presentToday++;
+            }
+            Object.keys(attendanceData[name]).forEach(date => {
+                totalRecords++;
+                activeEmployees.add(name);
+            });
+        });
+        
+        document.getElementById('presentToday').textContent = presentToday;
+        document.getElementById('totalRecords').textContent = totalRecords;
+        document.getElementById('activeEmployees').textContent = activeEmployees.size;
+        document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        
+        notification.className = `${bgColor} text-white px-6 py-4 rounded-xl shadow-lg fixed top-4 right-4 z-50 animate-fade-in flex items-center`;
+        notification.innerHTML = `
+            <i class="fas ${icon} mr-3 text-xl"></i>
+            <span class="font-semibold">${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-auto text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+
+    // Save attendanceData to localStorage after any change
+    function saveAttendanceData() {
+      localStorage.setItem(getCurrentAdminKey('attendanceData'), JSON.stringify(attendanceData));
+    }
+
+    // Update all functions that modify attendanceData to call saveAttendanceData()
+function timeIn() {
+        const name = document.getElementById('employeeName').value;
+        if (!name) {
+            showNotification('Please select an employee!', 'error');
+            return;
+        }
+    const date = getCurrentDate();
+    if (!attendanceData[name]) attendanceData[name] = {};
+    if (!attendanceData[name][date]) attendanceData[name][date] = {};
+        if (attendanceData[name][date].timeIn) {
+            showNotification(`${name} has already clocked in today!`, 'error');
+            return;
+        }
+    attendanceData[name][date].timeIn = new Date();
+        saveAttendanceData();
+    updateAttendanceLog();
+        showNotification(`${name} has clocked in successfully!`);
+}
+function timeOut() {
+        const name = document.getElementById('employeeName').value;
+        if (!name) {
+            showNotification('Please select an employee!', 'error');
+            return;
+        }
+    const date = getCurrentDate();
+    if (!attendanceData[name]) attendanceData[name] = {};
+    if (!attendanceData[name][date]) attendanceData[name][date] = {};
+        if (attendanceData[name][date].timeOut) {
+            showNotification(`${name} has already clocked out today!`, 'error');
+            return;
+        }
+        if (!attendanceData[name][date].timeIn) {
+            showNotification(`${name} must clock in first before clocking out!`, 'error');
+            return;
+        }
+    attendanceData[name][date].timeOut = new Date();
+        saveAttendanceData();
+    updateAttendanceLog();
+        showNotification(`${name} has clocked out successfully!`);
+}
+function lunchIn() {
+        const name = document.getElementById('employeeName').value;
+        if (!name) {
+            showNotification('Please select an employee!', 'error');
+            return;
+        }
+    const date = getCurrentDate();
+    if (!attendanceData[name]) attendanceData[name] = {};
+    if (!attendanceData[name][date]) attendanceData[name][date] = {};
+        if (attendanceData[name][date].lunchIn) {
+            showNotification(`${name} has already started lunch today!`, 'error');
+            return;
+        }
+        if (!attendanceData[name][date].timeIn) {
+            showNotification(`${name} must clock in first before starting lunch!`, 'error');
+            return;
+        }
+    attendanceData[name][date].lunchIn = new Date();
+        saveAttendanceData();
+    updateAttendanceLog();
+        showNotification(`${name} has started lunch break!`);
+}
+function lunchOut() {
+        const name = document.getElementById('employeeName').value;
+        if (!name) {
+            showNotification('Please select an employee!', 'error');
+            return;
+        }
+    const date = getCurrentDate();
+    if (!attendanceData[name]) attendanceData[name] = {};
+    if (!attendanceData[name][date]) attendanceData[name][date] = {};
+        if (attendanceData[name][date].lunchOut) {
+            showNotification(`${name} has already ended lunch today!`, 'error');
+            return;
+        }
+        if (!attendanceData[name][date].lunchIn) {
+            showNotification(`${name} must start lunch first before ending it!`, 'error');
+            return;
+        }
+    attendanceData[name][date].lunchOut = new Date();
+        saveAttendanceData();
+    updateAttendanceLog();
+        showNotification(`${name} has ended lunch break!`);
+}
+function snackIn() {
+        const name = document.getElementById('employeeName').value;
+        if (!name) {
+            showNotification('Please select an employee!', 'error');
+            return;
+        }
+    const date = getCurrentDate();
+    if (!attendanceData[name]) attendanceData[name] = {};
+    if (!attendanceData[name][date]) attendanceData[name][date] = {};
+        if (attendanceData[name][date].snackIn) {
+            showNotification(`${name} has already started snack today!`, 'error');
+            return;
+        }
+        if (!attendanceData[name][date].timeIn) {
+            showNotification(`${name} must clock in first before starting snack!`, 'error');
+            return;
+        }
+    attendanceData[name][date].snackIn = new Date();
+        saveAttendanceData();
+    updateAttendanceLog();
+        showNotification(`${name} has started snack break!`);
+}
+function snackOut() {
+        const name = document.getElementById('employeeName').value;
+        if (!name) {
+            showNotification('Please select an employee!', 'error');
+            return;
+        }
+    const date = getCurrentDate();
+    if (!attendanceData[name]) attendanceData[name] = {};
+    if (!attendanceData[name][date]) attendanceData[name][date] = {};
+        if (attendanceData[name][date].snackOut) {
+            showNotification(`${name} has already ended snack today!`, 'error');
+            return;
+        }
+        if (!attendanceData[name][date].snackIn) {
+            showNotification(`${name} must start snack first before ending it!`, 'error');
+            return;
+        }
+    attendanceData[name][date].snackOut = new Date();
+        saveAttendanceData();
+    updateAttendanceLog();
+        showNotification(`${name} has ended snack break!`);
+}
+
+function updateAttendanceLog() {
+    loadAttendanceData();
+    const log = document.getElementById('attendanceLog');
+    const emptyState = document.getElementById('emptyState');
+    log.innerHTML = '';
+    // Group records by date
+    const dateMap = {};
+    Object.keys(attendanceData).forEach(name => {
+        Object.keys(attendanceData[name]).forEach(date => {
+            if (!dateMap[date]) dateMap[date] = [];
+            dateMap[date].push({ name, record: attendanceData[name][date] });
+        });
+    });
+    const sortedDates = Object.keys(dateMap).sort((a, b) => new Date(b) - new Date(a));
+    if (sortedDates.length === 0) {
+        emptyState.classList.remove('hidden');
+        updateStats();
+        return;
+    }
+    emptyState.classList.add('hidden');
+    sortedDates.forEach(date => {
+        log.innerHTML += `<div class='mb-6'><div class='mb-2 text-lg font-bold text-cyan-700 border-b border-cyan-200 pb-1'>${new Date(date).toLocaleDateString(undefined, { month: 'long', day: '2-digit', year: 'numeric' })}</div>`;
+        dateMap[date].forEach(({ name, record }) => {
+            let timeInStr = record.timeIn ? new Date(record.timeIn).toLocaleTimeString() : '<span class="text-gray-400">--:--</span>';
+            let lunchInStr = record.lunchIn ? new Date(record.lunchIn).toLocaleTimeString() : '<span class="text-gray-400">--:--</span>';
+            let lunchOutStr = record.lunchOut ? new Date(record.lunchOut).toLocaleTimeString() : '<span class="text-gray-400">--:--</span>';
+            let snackInStr = record.snackIn ? new Date(record.snackIn).toLocaleTimeString() : '<span class="text-gray-400">--:--</span>';
+            let snackOutStr = record.snackOut ? new Date(record.snackOut).toLocaleTimeString() : '<span class="text-gray-400">--:--</span>';
+            let timeOutStr = record.timeOut ? new Date(record.timeOut).toLocaleTimeString() : '<span class="text-gray-400">--:--</span>';
+            let workHours = '';
+            if (record.timeIn && record.timeOut) {
+                const diffMs = new Date(record.timeOut) - new Date(record.timeIn);
+                const diffH = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffM = Math.floor((diffMs / (1000 * 60)) % 60);
+                workHours = `<span class="ml-2 text-cyan-700 font-semibold">Worked: ${diffH}h ${diffM}m</span>`;
+            }
+            log.innerHTML += `
+                <div class="mb-4 p-4 rounded-xl bg-gradient-to-r from-cyan-50 via-white to-blue-50 shadow border border-cyan-200/50">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold text-cyan-700 text-lg">${name}</span>
+                        <button onclick="deleteAttendanceRecord('${name.replace(/'/g, "\\'")}', '${date}')" class="ml-4 bg-red-500 hover:bg-red-700 text-white rounded-full p-2 shadow transition-colors duration-200" title="Delete this record">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                        <div><strong>Time In:</strong> ${timeInStr}</div>
+                        <div><strong>Lunch In:</strong> ${lunchInStr}</div>
+                        <div><strong>Lunch Out:</strong> ${lunchOutStr}</div>
+                        <div><strong>Snack In:</strong> ${snackInStr}</div>
+                        <div><strong>Snack Out:</strong> ${snackOutStr}</div>
+                        <div><strong>Time Out:</strong> ${timeOutStr}</div>
+                    </div>
+                    ${workHours}
+                </div>
+            `;
+        });
+        log.innerHTML += `</div>`;
+    });
+    updateStats();
+}
+
+    // Always load attendanceData from localStorage before rendering or updating
+    function loadAttendanceData() {
+        attendanceData = JSON.parse(localStorage.getItem(getCurrentAdminKey('attendanceData')) || '{}');
+    }
+
+    // On page load, always load attendanceData from localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAttendanceData();
+        populateEmployeeSelect();
+        updateStats();
+        updateAttendanceLog();
+        
+        // Auto-update Footer Year
+        const yearSpan = document.getElementById('year');
+        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+        
+        // Refresh employee list every 10 seconds in case employees are added/removed
+        setInterval(populateEmployeeSelect, 10000);
+    });
+
+    // Add deleteAttendanceRecord function with confirmation
+    function deleteAttendanceRecord(name, date) {
+      if (confirm(`Are you sure you want to delete the attendance record for ${name} on ${new Date(date).toLocaleDateString()}? This action cannot be undone.`)) {
+        loadAttendanceData();
+        if (attendanceData[name] && attendanceData[name][date]) {
+          delete attendanceData[name][date];
+          // If no more records for this employee, remove the employee key
+          if (Object.keys(attendanceData[name]).length === 0) {
+            delete attendanceData[name];
+          }
+          saveAttendanceData();
+          updateAttendanceLog();
+          showNotification('Attendance record deleted successfully!');
+        }
+      }
+    }
+    // Expose globally
+    window.deleteAttendanceRecord = deleteAttendanceRecord;
+</script>
+</body>
+</html>

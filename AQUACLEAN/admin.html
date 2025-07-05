@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin | AquaClean</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-200 via-cyan-100 to-blue-400 min-h-screen font-sans flex items-center justify-center relative overflow-x-hidden">
+    <!-- Decorative Blobs -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-300 opacity-30 rounded-full blur-3xl z-0"></div>
+    <div class="absolute -bottom-32 -right-32 w-[28rem] h-[28rem] bg-cyan-200 opacity-30 rounded-full blur-3xl z-0"></div>
+    <!-- Admin Card -->
+    <div class="relative w-full max-w-md mx-auto bg-white/80 backdrop-blur-xl border border-blue-100 rounded-3xl shadow-2xl p-10 flex flex-col items-center z-10">
+        <!-- Back to Home Button -->
+        <a href="index.html"
+           class="absolute left-4 top-4 flex items-center gap-2 text-blue-700 font-semibold text-base bg-blue-100/80 px-4 py-1.5 rounded-full shadow hover:bg-blue-200 hover:text-blue-900 transition"
+        >
+            <span class="text-xl">&#8592;</span> Home
+        </a>
+        <div class="flex flex-col items-center mb-6 mt-2">
+            <div class="bg-gradient-to-tr from-blue-400 to-cyan-300 p-3 rounded-full shadow-lg mb-2">
+                <img src="https://img.icons8.com/fluency/96/lock-2.png" alt="Admin Login" class="w-16 h-16" />
+            </div>
+            <div class="text-blue-700 text-3xl font-extrabold tracking-wide drop-shadow mb-1">Admin Login</div>
+            <div class="text-blue-400 text-base font-medium">AquaClean Management Portal</div>
+        </div>
+        <form id="adminLoginForm" class="w-full flex flex-col gap-4 mt-2">
+            <label for="admin-username" class="text-blue-700 font-semibold text-left">Username</label>
+            <input type="text" id="admin-username" name="admin-username" placeholder="Enter your username"
+                   class="w-full px-4 py-2 rounded-xl border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition mb-2 shadow-sm" required>
+            <label for="admin-password" class="text-blue-700 font-semibold text-left">Password</label>
+            <input type="password" id="admin-password" name="admin-password" placeholder="Enter your password"
+                   class="w-full px-4 py-2 rounded-xl border border-blue-200 focus:border-blue-500 focus:bg-blue-50 transition mb-2 shadow-sm" required>
+            <button type="submit"
+                    class="w-full py-3 mt-2 bg-gradient-to-r from-blue-700 to-cyan-400 text-white font-bold rounded-xl shadow-lg hover:from-blue-800 hover:to-cyan-500 transition text-lg tracking-wide">
+                Log In
+            </button>
+            <div id="loginError" class="text-red-600 text-sm mt-2 hidden text-center">Invalid credentials. Try again.</div>
+        </form>
+        <div class="mt-8 text-blue-400 text-sm text-center select-none">
+            &copy; 2024 AquaClean Laundry & Water Refilling Station
+        </div>
+    </div>
+    <!-- Navigation Bar -->
+    <nav class="relative z-20 mx-auto max-w-4xl flex justify-center mb-8">
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-4 px-4 py-2 sm:py-3 w-full bg-white/70 backdrop-blur-xl shadow-2xl border border-blue-200 rounded-full ring-2 ring-cyan-200/40">
+            <a href="index.html" class="flex items-center gap-2 text-blue-700 font-semibold px-5 py-2 rounded-full hover:bg-gradient-to-r hover:from-blue-100 hover:to-cyan-100 hover:text-blue-900 transition shadow-sm">
+                <span class="text-lg">🏠</span> Home
+            </a>
+            <a href="admin.html" class="flex items-center gap-2 text-white font-semibold px-5 py-2 rounded-full bg-gradient-to-r from-blue-700 to-cyan-400 shadow-lg ring-2 ring-cyan-300 transition">
+                <span class="text-lg">🔒</span> Admin
+            </a>
+        </div>
+    </nav>
+    <!-- Reusable Modal System -->
+    <div id="customModalBackdrop" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+      <div id="customModal" class="bg-white rounded-xl shadow-xl p-8 max-w-xs w-full text-center relative">
+        <div id="customModalIcon" class="mb-4"></div>
+        <h3 id="customModalTitle" class="text-2xl font-bold mb-2"></h3>
+        <div id="customModalMessage" class="mb-4 text-gray-700"></div>
+        <div class="flex justify-center gap-4 mt-4">
+          <button id="customModalOk" class="bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow transition"></button>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Check if user is already logged in
+        if (api.token) {
+          // Redirect to admin panel
+          window.location.href = 'admin-panel.html';
+          return;
+        }
+
+        const loginForm = document.getElementById('adminLoginForm');
+        const errorDiv = document.getElementById('loginError');
+
+        loginForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const username = document.getElementById('admin-username').value.trim();
+          const password = document.getElementById('admin-password').value;
+
+          if (!username || !password) {
+            api.showAlert('Please enter both username and password', 'error');
+            return;
+          }
+
+          try {
+            const response = await api.login(username, password);
+            
+            if (response.success) {
+              errorDiv.classList.add('hidden');
+              api.showAlert('Login successful! Redirecting...', 'success');
+              
+              // Redirect based on user role
+              setTimeout(() => {
+                if (response.user.role === 'admin') {
+                  window.location.href = 'admin-panel.html';
+                } else if (response.user.role === 'manager') {
+                  window.location.href = 'admin-panel.html';
+                } else {
+                  window.location.href = 'admin-panel-user.html';
+                }
+              }, 1000);
+            } else {
+              errorDiv.classList.remove('hidden');
+              api.showAlert(response.message || 'Login failed', 'error');
+            }
+          } catch (error) {
+            errorDiv.classList.remove('hidden');
+            api.handleError(error);
+          }
+        });
+
+        // Auto-fill demo credentials for testing
+        document.getElementById('admin-username').addEventListener('focus', function() {
+          if (!this.value) {
+            this.value = 'admin';
+          }
+        });
+
+        document.getElementById('admin-password').addEventListener('focus', function() {
+          if (!this.value) {
+            this.value = 'admin123';
+          }
+        });
+
+        // Check backend health on page load
+        checkBackendHealth();
+      });
+
+      async function checkBackendHealth() {
+        try {
+          await api.checkHealth();
+          console.log('Backend is running');
+        } catch (error) {
+          console.error('Backend is not running:', error);
+          api.showAlert('Backend server is not running. Please start the server first.', 'warning');
+        }
+      }
+    </script>
+    <script>
+      // Custom Modal System
+      function showCustomAlert(message, title = 'Notice', icon = 'info', okText = 'OK') {
+        return new Promise(resolve => {
+          const backdrop = document.getElementById('customModalBackdrop');
+          const modal = document.getElementById('customModal');
+          document.getElementById('customModalTitle').textContent = title;
+          document.getElementById('customModalMessage').textContent = message;
+          const okBtn = document.getElementById('customModalOk');
+          okBtn.textContent = okText;
+          okBtn.className = 'bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow transition';
+          // Icon
+          const iconDiv = document.getElementById('customModalIcon');
+          iconDiv.innerHTML = icon === 'success' ? "<i class='fas fa-check-circle text-green-500 text-4xl'></i>" : icon === 'error' ? "<i class='fas fa-times-circle text-red-500 text-4xl'></i>" : icon === 'warning' ? "<i class='fas fa-exclamation-triangle text-yellow-500 text-4xl'></i>" : "<i class='fas fa-info-circle text-blue-500 text-4xl'></i>";
+          backdrop.classList.remove('hidden');
+          okBtn.onclick = () => {
+            backdrop.classList.add('hidden');
+            resolve();
+          };
+        });
+      }
+    </script>
+</body>
+</html>
